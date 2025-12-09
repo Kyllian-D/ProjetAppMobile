@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Background optional: on peut laisser transparent ou définir une couleur -->
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="@android:color/transparent" />
+        </shape>
+    </item>
+
+    <!-- Le logo PNG centré -->
+    <item android:gravity="center">
+        <bitmap
+            android:src="@drawable/plasmabioticslogo"
+            android:gravity="center" />
+    </item>
+</layer-list>

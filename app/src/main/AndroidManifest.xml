@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.plasmatrack">
+
+    <!-- Permission to post notifications (Android 13+) -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <application
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/iconeapp"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/iconeapp"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.PlasmaTrack">
+
+        <!-- LoginActivity is the new launcher (first page) -->
+        <activity
+            android:name=".LoginActivity"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.PlasmaTrack">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- Keep MainActivity declared (no launcher intent-filter) -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.PlasmaTrack" />
+
+        <!-- Home activity to navigate after login -->
+        <activity
+            android:name=".HomeActivity"
+            android:exported="true"
+            android:label="Home"
+            android:theme="@style/Theme.PlasmaTrack" />
+
+        <!-- Parameters (Settings) activity -->
+        <activity
+            android:name=".ParametersActivity"
+            android:exported="true"
+            android:label="Paramètres"
+            android:theme="@style/Theme.PlasmaTrack" />
+
+        <!-- AquaTYPHOON activity -->
+        <activity
+            android:name=".AquaTYPHOONActivity"
+            android:exported="true"
+            android:label="AquaTYPHOON"
+            android:theme="@style/Theme.PlasmaTrack" />
+
+        <!-- PlasmaTYPHOON activity (ajoutée) -->
+        <activity
+            android:name=".PlasmaTYPHOONActivity"
+            android:exported="true"
+            android:label="PlasmaTYPHOON"
+            android:theme="@style/Theme.PlasmaTrack" />
+
+        <!-- UserAquaActivity (nouvelle) -->
+        <activity
+            android:name=".UserAquaActivity"
+            android:exported="true"
+            android:label="User"
+            android:theme="@style/Theme.PlasmaTrack" />
+
+        <!-- UserPlasmaActivity (nouvelle) -->
+        <activity
+            android:name=".UserPlasmaActivity"
+            android:exported="true"
+            android:label="User Plasma"
+            android:theme="@style/Theme.PlasmaTrack" />
+
+        <!-- PlasmaConnectionCardsActivity (nouvelle) -->
+        <activity
+            android:name=".PlasmaConnectionCardsActivity"
+            android:exported="true"
+            android:label="Plasma Connection Cards"
+            android:theme="@style/Theme.PlasmaTrack" />
+
+        <!-- ConnectionCardsActivity (nouvelle) -->
+        <activity
+            android:name=".ConnectionCardsActivity"
+            android:exported="true"
+            android:label="Connection Cards"
+            android:theme="@style/Theme.PlasmaTrack" />
+
+        <!-- QuickGuides activities -->
+        <activity
+            android:name=".QuickGuidesActivity"
+            android:exported="true"
+            android:label="Quick Guides"
+            android:theme="@style/Theme.PlasmaTrack" />
+
+        <activity
+            android:name=".AquaQuickActivity2"
+            android:exported="true"
+            android:label="Quick Guides (Compose)"
+            android:theme="@style/Theme.PlasmaTrack" />
+
+        <!-- PlasmaQuickActivity2 (Compose) - ADDED -->
+        <activity
+            android:name=".PlasmaQuickActivity2"
+            android:exported="true"
+            android:label="Plasma Quick Guides (Compose)"
+            android:theme="@style/Theme.PlasmaTrack" />
+
+        <!-- ManualActivity (PDFs only) -->
+        <activity
+            android:name=".ManualActivity"
+            android:exported="true"
+            android:label="Manuals"
+            android:theme="@style/Theme.PlasmaTrack" />
+
+        <!-- TechManualActivity (PDFs only - technical manuals) -->
+        <activity
+            android:name=".TechManualActivity"
+            android:exported="true"
+            android:label="Tech Manuals"
+            android:theme="@style/Theme.PlasmaTrack" />
+
+        <!-- PlasmaManualActivity (PDFs for Plasma section) -->
+        <activity
+            android:name=".PlasmaManualActivity"
+            android:exported="false"
+            android:label="Plasma Manuals"
+            android:theme="@style/Theme.PlasmaTrack" />
+
+        <!-- Favorites activity -->
+        <activity
+            android:name=".FavoritesActivity"
+            android:exported="true"
+            android:label="Favorites"
+            android:theme="@style/Theme.PlasmaTrack" />
+
+        <!-- Shop activity -->
+        <activity
+            android:name=".ShopActivity"
+            android:exported="true"
+            android:label="Shop"
+            android:theme="@style/Theme.PlasmaTrack" />
+
+        <!-- Product detail activity -->
+        <activity
+            android:name=".ProductDetailActivity"
+            android:exported="true"
+            android:label="Product"
+            android:theme="@style/Theme.PlasmaTrack" />
+
+        <!-- Read-only product detail activity for normal users -->
+        <activity
+            android:name=".ProductDetailActivityUser"
+            android:exported="true"
+            android:label="Product"
+            android:theme="@style/Theme.PlasmaTrack" />
+
+        <!-- Clock / label capture activity -->
+        <activity
+            android:name=".ClockActivity"
+            android:exported="true"
+            android:label="Clock"
+            android:theme="@style/Theme.PlasmaTrack" />
+
+        <!-- Receiver for label alarms -->
+        <receiver android:name=".LabelAlarmReceiver" android:exported="true" />
+
+        <!-- FileProvider so we can take photos into cache and share via URI -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
+    </application>
+
+</manifest>
