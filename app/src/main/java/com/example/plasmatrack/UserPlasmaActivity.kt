@@ -123,7 +123,14 @@ fun UserPlasmaScreen() {
                 ButtonCard(
                     imageRes = R.drawable.btn_techmanual,
                     contentDesc = "Tech Manual",
-                    onClick = { Toast.makeText(context, "Tech Manual clicked", Toast.LENGTH_SHORT).show() }
+                    onClick = {
+                        val intent = Intent(context, PlasmaTechManualActivity::class.java)
+                        try {
+                            if (context is Activity) context.startActivity(intent) else { intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK); context.startActivity(intent) }
+                        } catch (e: Exception) {
+                            e.printStackTrace(); intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK); context.startActivity(intent)
+                        }
+                    }
                 )
             }
         }

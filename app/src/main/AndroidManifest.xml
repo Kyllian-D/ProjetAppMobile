@@ -124,6 +124,13 @@
             android:label="Tech Manuals"
             android:theme="@style/Theme.PlasmaTrack" />
 
+        <!-- PlasmaTechManualActivity (PDFs only - technical manuals for Plasma) -->
+        <activity
+            android:name=".PlasmaTechManualActivity"
+            android:exported="true"
+            android:label="Plasma Tech Manuals"
+            android:theme="@style/Theme.PlasmaTrack" />
+
         <!-- PlasmaManualActivity (PDFs for Plasma section) -->
         <activity
             android:name=".PlasmaManualActivity"
