@@ -144,11 +144,11 @@ fun ParametersScreen() {
             // Logout button
             Button(
                 onClick = {
-                    // Only remove transient/session keys (do NOT delete saved account info)
+                    // Supprimer uniquement les clés transitoires/de session (NE PAS supprimer les informations de compte enregistrées)
                     val editor = prefs.edit()
                     editor.remove("remember")
                     editor.remove("remember_user")
-                    // Do not remove saved_user/saved_pass/saved_first etc.: keep the account
+                    // Ne supprime pas saved_user/saved_pass/saved_first, etc. : conservez le compte
                     editor.apply()
                     SessionManager.clear()
                     Toast.makeText(context, "Logged out", Toast.LENGTH_SHORT).show()
@@ -206,7 +206,7 @@ fun ParametersScreen() {
             }
         }
 
-        // Bottom icons bar (fixed) — replaced with Surface + navigationBarsPadding for consistency
+        // Barre d'icônes en bas (fixe) — remplacée par Surface + navigationBarsPadding pour plus de cohérence
         Surface(
             modifier = Modifier
                 .fillMaxWidth()

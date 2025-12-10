@@ -88,7 +88,7 @@ fun ProductDetailUserScreen(product: Product?) {
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            // Image preview : white rounded card with elevation (no rectangle16products drawable)
+            // Aperçu de l'image  carte blanche arrondie avec élévation (pas de drawable rectangle16products)
             Box(modifier = Modifier
                 .fillMaxWidth()
                 .wrapContentWidth(Alignment.CenterHorizontally)
@@ -118,7 +118,7 @@ fun ProductDetailUserScreen(product: Product?) {
                                 .size(width = 350.dp, height = 420.dp)
                                 .clip(RoundedCornerShape(16.dp)))
                         } else {
-                            // default image inside white card
+                            // image par défaut à l'intérieur de la carte blanche
                             Image(
                                 painter = painterResource(id = R.drawable.imagedefaultproducts),
                                 contentDescription = "Default product",
@@ -145,7 +145,7 @@ fun ProductDetailUserScreen(product: Product?) {
             Spacer(modifier = Modifier.height(96.dp))
         }
 
-        // Bottom bar (consistent with other screens)
+
         Surface(
             modifier = Modifier
                 .fillMaxWidth()

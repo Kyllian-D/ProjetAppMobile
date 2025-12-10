@@ -10,7 +10,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        // Start LoginActivity immediately and finish MainActivity so Login is shown first
+        // Démarrer immédiatement LoginActivity et terminer MainActivity afin que la connexion soit affichée en premier
         startActivity(Intent(this, LoginActivity::class.java))
         finish()
     }

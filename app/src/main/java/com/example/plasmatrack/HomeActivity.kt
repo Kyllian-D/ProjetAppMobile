@@ -55,7 +55,7 @@ class HomeActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        // Initialize in-memory session from intent extras if provided (login path)
+        // Initialiser la session en mémoire à partir des extras de l'intent si fournis (chemin de connexion)
         intent?.let { itnt ->
             val r = itnt.getStringExtra("session_role")
             val f = itnt.getStringExtra("session_first")
@@ -63,7 +63,7 @@ class HomeActivity : ComponentActivity() {
                 SessionManager.setSession(r, f)
             }
         }
-        // Remettre la navigation bar en blanc et demander des icônes sombres (même comportement que ClockActivity)
+        // Remettre la barre de navigation en blanc et demander des icônes sombres (même comportement que ClockActivity)
         try {
             @Suppress("DEPRECATION")
             window.navigationBarColor = android.graphics.Color.WHITE
@@ -85,11 +85,11 @@ fun HomeScreen() {
     val context = LocalContext.current
     val activity = context as? Activity
     val prefs = context.getSharedPreferences("auth", Context.MODE_PRIVATE)
-    // If an in-memory session exists (e.g. superadmin), prefer it over persisted prefs
+    // Si une session en mémoire existe (par exemple superadmin), la privilégier par rapport aux préférences persistantes
     val sessionFirst = SessionManager.firstName
     val displayName = sessionFirst ?: prefs.getString("saved_first", null) ?: "utilisateur"
 
-    // Detect navigation bar height (pixels) et convertir en dp
+    // Détecter la hauteur de la barre de navigation (en pixels) et convertir en dp
     val view = LocalView.current
     val bottomPx = remember(view) {
         ViewCompat.getRootWindowInsets(view)
@@ -99,7 +99,7 @@ fun HomeScreen() {
     val navBarBottomDp = with(LocalDensity.current) { bottomPx.toDp() }
     val bottomExtraPadding = if (navBarBottomDp > 0.dp) 8.dp else 0.dp
 
-    // Use a white background as requested
+    // utilise fond blanc
     Box(modifier = Modifier
         .fillMaxSize()
         .background(Color.White)
@@ -108,7 +108,7 @@ fun HomeScreen() {
             .fillMaxSize()
             .padding(start = 16.dp, end = 16.dp, top = 60.dp, bottom = 8.dp)
         ) {
-            // Ligne supérieure : avatar + texte d'accueil
+            // Ligne supérieure avatar + texte d'accueil
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     // Avatar circulaire (image de profil)
@@ -130,7 +130,7 @@ fun HomeScreen() {
                     }
                 }
 
-                // Note : zone de droite (top-right) retirée intentionnellement
+                // Note zone de droite (top-right) retirée intentionnellement
             }
 
             Spacer(modifier = Modifier.height(6.dp))
@@ -216,7 +216,7 @@ fun HomeScreen() {
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            // === Section produit 2 (Plasma) ===
+            // Section produit 2 (Plasma) 
             // Structure identique à la section Aqua : plaque blanche + conteneur image cliquable
             Box(
                 modifier = Modifier

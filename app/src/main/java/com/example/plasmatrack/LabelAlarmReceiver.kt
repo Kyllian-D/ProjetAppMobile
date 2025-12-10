@@ -10,7 +10,7 @@ import android.app.PendingIntent
 import android.os.Build
 import androidx.core.app.NotificationCompat
 
-@SuppressLint("MissingPermission") // runtime permission POST_NOTIFICATIONS should be requested by the app when needed
+@SuppressLint("MissingPermission") // la permission POST_NOTIFICATIONS doit être demandée par l'application si nécessaire
 class LabelAlarmReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         val labelId = intent.getLongExtra("labelId", -1L)

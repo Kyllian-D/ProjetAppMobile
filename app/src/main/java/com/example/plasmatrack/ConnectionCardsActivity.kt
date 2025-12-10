@@ -36,7 +36,7 @@ import androidx.core.view.WindowInsetsControllerCompat
 
 private const val CONN_FILE = "connection_cards.csv"
 
-// Simple data model for a connection card row (columns A..F)
+// Modèle de données simple pour une ligne de carte de connexion (colonnes A..F)
 data class ConnectionCardItem(
     val brand: String,
     val connectionSet: String,
@@ -44,13 +44,13 @@ data class ConnectionCardItem(
     val pentaxItem: String = "",
     val cycleCode: String = "",
     val connectionCard: String,
-    val raw: String? = null // raw CSV line for debug/full display
+    val raw: String? = null // ligne CSV brute pour débogage/affichage complet
 )
 
 class ConnectionCardsActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // hide system bars for this activity (keeps consistent behavior with Aqua)
+        // cacher les barres système pour cette activité (garde un comportement cohérent avec Aqua)
         try {
             WindowCompat.setDecorFitsSystemWindows(window, false)
             val controller = WindowCompat.getInsetsController(window, window.decorView)
@@ -59,7 +59,7 @@ class ConnectionCardsActivity : ComponentActivity() {
                 it.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
             }
         } catch (_: Exception) {
-            // ignore on older devices
+            // ignorer sur les anciens appareils
         }
         enableEdgeToEdge()
         setContent {
@@ -72,6 +72,7 @@ class ConnectionCardsActivity : ComponentActivity() {
     }
 }
 
+// Fonction pour copier un fichier URI vers un fichier interne
 private fun copyUriToInternalFile(context: android.content.Context, uri: Uri, destName: String = CONN_FILE): Boolean {
     return try {
         val resolver = context.contentResolver
@@ -88,6 +89,7 @@ private fun copyUriToInternalFile(context: android.content.Context, uri: Uri, de
     }
 }
 
+// Fonction pour charger les cartes de connexion à partir d'un fichier
 fun loadConnectionCardsFromFile(context: android.content.Context, fileName: String = CONN_FILE): List<ConnectionCardItem> {
     val list = mutableListOf<ConnectionCardItem>()
     try {
@@ -99,7 +101,7 @@ fun loadConnectionCardsFromFile(context: android.content.Context, fileName: Stri
             val headerLine = iter.next().trim().trimStart('\uFEFF')
             val headers = parseCsvLine2(headerLine).map { it.lowercase().trim() }
 
-            // find index helper
+            // trouver l'index des colonnes
             fun findIndex(vararg keys: String): Int {
                 val lowered = headers
                 for (k in keys) {
@@ -114,7 +116,7 @@ fun loadConnectionCardsFromFile(context: android.content.Context, fileName: Stri
                 return -1
             }
 
-            // prefer fixed positions A..F when header has >=6 columns
+            // préférer les positions fixes A..F lorsque l'en-tête a >=6 colonnes
             val brandIdx: Int
             val connSetIdx: Int
             val plasmaIdx: Int
@@ -177,7 +179,7 @@ fun loadConnectionCardsFromFile(context: android.content.Context, fileName: Stri
     return list
 }
 
-// very small CSV parser that handles simple quoted fields and both comma and semicolon separators
+// Très petit analyseur CSV qui gère les champs entre guillemets et les séparateurs virgule/point-virgule
 private fun parseCsvLine2(line: String): List<String> {
     val result = mutableListOf<String>()
     val s = line.trim().trimStart('\uFEFF')
@@ -215,7 +217,7 @@ fun ConnectionCardsScreen() {
     var showConfirmImport by remember { mutableStateOf(false) }
     var selectedItem by remember { mutableStateOf<ConnectionCardItem?>(null) }
     var showDetail by remember { mutableStateOf(false) }
-    // favorites for connection cards: use an immutable Set<String> stored in MutableState
+    // favoris pour les cartes de connexion utiliser un Set<String> immuable stocké dans MutableState
     val connFavoritesState = remember { mutableStateOf(ProductStorage.loadConnFavorites(context).toSet()) }
 
     fun isSuperadminNow(): Boolean {

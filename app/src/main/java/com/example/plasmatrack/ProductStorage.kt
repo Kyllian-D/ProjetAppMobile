@@ -51,7 +51,7 @@ object ProductStorage {
         return list
     }
 
-    // --- Favorites persistence (public) ---
+    // Persistance des favoris (publique)
     fun saveFavorites(context: Context, favorites: Set<Long>) {
         val prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
         prefs.edit { putString(KEY_FAVORITES, favorites.joinToString(",")) }
@@ -63,7 +63,7 @@ object ProductStorage {
         return if (joined.isBlank()) mutableSetOf() else joined.split(",").mapNotNull { it.toLongOrNull() }.toMutableSet()
     }
 
-    // --- Connection cards favorites (by unique string id) ---
+    // Connection cards favorites
     fun saveConnFavorites(context: Context, favorites: Set<String>) {
         val prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
         prefs.edit { putString(KEY_CONN_FAVORITES, favorites.joinToString("||")) }
@@ -75,14 +75,14 @@ object ProductStorage {
         return if (joined.isBlank()) mutableSetOf() else joined.split("||").map { it }.toMutableSet()
     }
 
-    // --- Labels (captured from camera) persistence ---
+    //  Labels (captured from camera) persistence
     data class LabelRecord(
         val id: Long = System.currentTimeMillis(),
         val endoscope: String,
         val serial: String,
         val dateStr: String,
         val operator: String,
-        val photoPath: String?, // internal file path
+        val photoPath: String?,
         val savedAt: Long = System.currentTimeMillis()
     )
 

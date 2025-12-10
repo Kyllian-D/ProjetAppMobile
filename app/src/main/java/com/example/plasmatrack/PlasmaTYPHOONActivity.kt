@@ -105,7 +105,7 @@ fun PlasmaTYPHOONScreen() {
         Box(modifier = Modifier.fillMaxSize().padding(top = 200.dp), contentAlignment = Alignment.TopCenter) {
             Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(16.dp)) {
 
-                // Image 1 : sales
+                // Image 1  sales
                 Box(modifier = Modifier
                     .fillMaxWidth(0.92f)
                     .height(92.dp)
@@ -125,7 +125,7 @@ fun PlasmaTYPHOONScreen() {
 
                 Spacer(modifier = Modifier.height(12.dp))
 
-                // Image 2 : technical
+                // Image 2  technical
                 Box(modifier = Modifier
                     .fillMaxWidth(0.92f)
                     .height(92.dp)
@@ -145,7 +145,7 @@ fun PlasmaTYPHOONScreen() {
 
                 Spacer(modifier = Modifier.height(12.dp))
 
-                // Image 3 : user (ouvre UserPlasmaActivity)
+                // Image 3  user (ouvre UserPlasmaActivity)
                 Box(modifier = Modifier
                     .fillMaxWidth(0.92f)
                     .height(92.dp)
@@ -170,7 +170,7 @@ fun PlasmaTYPHOONScreen() {
             }
         }
 
-        // Bottom nav (same style as ClockActivity)
+
         Surface(
             modifier = Modifier
                 .fillMaxWidth()
@@ -218,7 +218,7 @@ fun PlasmaTYPHOONScreen() {
                 }
 
                 IconButton(onClick = {
-                    // Open Parameters (settings) when tapping the user icon in the bottom bar
+
                     val intent = Intent(context, ParametersActivity::class.java)
                     try {
                         if (context is Activity) context.startActivity(intent) else {

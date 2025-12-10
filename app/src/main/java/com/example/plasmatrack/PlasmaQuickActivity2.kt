@@ -49,14 +49,14 @@ import androidx.activity.result.contract.ActivityResultContracts
 class PlasmaQuickActivity2 : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // hide system bars for this activity (keeps consistent behavior with Aqua)
+        // masquer les barres système pour cette activité (maintient un comportement cohérent avec Aqua)
         try {
             val controller = WindowCompat.getInsetsController(window, window.decorView)
             controller.hide(WindowInsetsCompat.Type.systemBars())
             controller.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
             WindowCompat.setDecorFitsSystemWindows(window, false)
         } catch (_: Exception) {
-            // ignore on older devices
+            // ignorer sur les anciens appareils
         }
 
         enableEdgeToEdge()
@@ -71,7 +71,7 @@ class PlasmaQuickActivity2 : ComponentActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        // restore system bars when activity is destroyed
+        // restaurer les barres système lorsque l'activité est détruite
         try {
             val controller = WindowCompat.getInsetsController(window, window.decorView)
             controller.show(WindowInsetsCompat.Type.systemBars())
@@ -88,7 +88,7 @@ fun PlasmaQuickScreen2() {
     val sections = remember { mutableStateListOf<QuickGuideSection>().apply { addAll(PlasmaQuickGuidesStorage.loadAll(ctx)) } }
     var showAddSection by remember { mutableStateOf(false) }
     var showAddGuide by remember { mutableStateOf<String?>(null) }
-    // states for add flow (choice between PDF and YouTube, PDF picker)
+    // états pour ajouter un flux (choix entre PDF et YouTube, sélecteur PDF)
     var showAddChoice by remember { mutableStateOf<String?>(null) }
     var showAddPdf by remember { mutableStateOf<String?>(null) }
     var pickedPdfUri by remember { mutableStateOf<Uri?>(null) }
@@ -119,7 +119,7 @@ fun PlasmaQuickScreen2() {
 
     DisposableEffect(Unit) { onDispose { } }
 
-    // root column with global verticalScroll to make entire screen scrollable
+    // colonne racine avec défilement vertical global pour rendre tout l'écran défilable
     val scrollState = rememberScrollState()
     Column(modifier = Modifier
         .fillMaxSize()
@@ -141,7 +141,7 @@ fun PlasmaQuickScreen2() {
         Spacer(modifier = Modifier.height(12.dp))
 
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-            // Add section reserved to superadmin
+            // Ajouter une section réservée au superadmin
             if (SessionManager.isSuperadmin(ctx)) {
                 Button(onClick = { showAddSection = true }) { Text("Add section") }
             } else {
@@ -163,7 +163,7 @@ fun PlasmaQuickScreen2() {
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        // --- affichage soit par sections (query vide) soit flat list de vidéos (query non vide)
+        //  affichage soit par sections (query vide) soit flat list de vidéos (query non vide)
         if (queryText.isEmpty()) {
             // affichage normal par sections en Column (scroll géré par parent)
             Column(modifier = Modifier.fillMaxWidth()) {
@@ -172,10 +172,10 @@ fun PlasmaQuickScreen2() {
                     Card(modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(12.dp), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface), elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)) {
                         Column(modifier = Modifier.padding(12.dp)) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
-                                // keep the section name as the primary element
+                                // garder le nom de la section comme élément principal
                                 Column(modifier = Modifier.weight(1f)) { Text(text = sec.name, style = MaterialTheme.typography.titleMedium, maxLines = 1, overflow = TextOverflow.Ellipsis) }
                                 Spacer(modifier = Modifier.width(8.dp))
-                                // ask user whether to add YouTube or PDF (only for superadmin)
+                                // demander à l'utilisateur s'il souhaite ajouter YouTube ou PDF (uniquement pour le superadministrateur)
                                 if (SessionManager.isSuperadmin(ctx)) {
                                     TextButton(onClick = { showAddChoice = sec.name }) { Text("Add") }
                                     TextButton(onClick = { PlasmaQuickGuidesStorage.removeSection(ctx, sec.name); sections.clear(); sections.addAll(PlasmaQuickGuidesStorage.loadAll(ctx)) }) { Text("Delete") }
@@ -190,15 +190,15 @@ fun PlasmaQuickScreen2() {
                                     Column(modifier = Modifier
                                         .fillMaxWidth()
                                         .clickable {
-                                            // open guide: if it's a PDF (file://, content:// or endsWith .pdf) open as PDF,
-                                            // otherwise treat as YouTube/link as before
+                                            // ouvrir le guide : si c'est un PDF (file://, content:// ou se termine par .pdf) ouvrir en tant que PDF,
+                                            // sinon traiter comme YouTube/lien comme avant
                                             try {
                                                 val url = g.youtubeUrl
                                                 val low = url.lowercase()
                                                 val isPdf = low.endsWith(".pdf") || low.startsWith("file://") || low.startsWith("content://")
                                                 if (isPdf) {
                                                     try {
-                                                        // Create a safe Uri
+
                                                         val pdfUri = when {
                                                             url.startsWith("file://") -> {
                                                                 val path = Uri.parse(url).path ?: ""
@@ -311,26 +311,26 @@ fun PlasmaQuickScreen2() {
             }
         }
 
-        // Dialog: user chooses whether to add PDF or YouTube
+        // Dialogue : l'utilisateur choisit d'ajouter un PDF ou YouTube
         if (showAddChoice != null) {
             val section = showAddChoice!!
             AlertDialog(onDismissRequest = { showAddChoice = null }, title = { Text("Add to \"$section\"") }, text = { Text("Choose type to add:") }, confirmButton = {
                 TextButton(onClick = {
-                    // choose YouTube -> open existing YouTube dialog
+                    // choisir YouTube -> ouvrir la boîte de dialogue YouTube existante
                     Toast.makeText(ctx, "YouTube chosen for $section", Toast.LENGTH_SHORT).show()
                     showAddGuide = section
                     showAddChoice = null
                 }) { Text("YouTube") }
             }, dismissButton = {
                 TextButton(onClick = {
-                    // choose PDF -> open PDF add dialog
+                    // choisir PDF -> ouvrir la boîte de dialogue d'ajout de PDF
                     showAddPdf = section
                     showAddChoice = null
                 }) { Text("PDF") }
             })
         }
 
-        // Dialog Add PDF
+        // Dialoguer Ajouter PDF
         if (showAddPdf != null) {
             val section = showAddPdf!!
             var title by remember { mutableStateOf("") }
@@ -371,7 +371,7 @@ fun PlasmaQuickScreen2() {
             })
         }
 
-        // Dialog Add Guide (YouTube) - ADDED: same logic as AquaQuick but using PlasmaQuickGuidesStorage
+        // Ajouter un guide de dialogue (YouTube) - AJOUTÉ : même logique que AquaQuick mais en utilisant PlasmaQuickGuidesStorage
         if (showAddGuide != null) {
             val section = showAddGuide!!
             var title by remember { mutableStateOf("") }
@@ -396,7 +396,7 @@ fun PlasmaQuickScreen2() {
             })
         }
 
-        // Dialog Add Section (identique à QuickGuidesActivity2)
+        // Ajouter une section de dialogue (identique à QuickGuidesActivity2)
         if (showAddSection) {
             var input by remember { mutableStateOf("") }
             AlertDialog(onDismissRequest = { showAddSection = false }, confirmButton = {

@@ -5,7 +5,7 @@ import androidx.core.content.edit
 import org.json.JSONArray
 import org.json.JSONObject
 
-// Data model reused for manuals (PDFs only)
+
 data class ManualItem(val id: Long = System.currentTimeMillis(), val title: String, val fileUrl: String, val description: String = "")
 data class ManualSection(val name: String, val items: MutableList<ManualItem> = mutableListOf())
 
@@ -45,7 +45,7 @@ object ManualStorage {
         }
     }
 
-    // Raw loader without filtering (used for migration from old data)
+    // Chargeur brut sans filtrage (utilisé pour la migration à partir des anciennes données)
     fun loadAllRaw(context: Context): MutableList<ManualSection> {
         val sp = context.getSharedPreferences(PREF, Context.MODE_PRIVATE)
         val raw = sp.getString(KEY, null) ?: return mutableListOf()

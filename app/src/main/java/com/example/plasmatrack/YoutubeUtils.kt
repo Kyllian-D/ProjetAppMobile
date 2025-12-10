@@ -21,7 +21,7 @@ fun extractYoutubeId(url: String?): String? {
             val m = p.matcher(url)
             if (m.find()) return m.group(1)
         }
-        // fallback: return first 11-char token if present
+        // repli : renvoie le premier token de 11 caractères s'il est présent
         val fallback = Regex("([A-Za-z0-9_-]{11})").find(url)
         fallback?.value
     } catch (e: Exception) {
@@ -29,4 +29,3 @@ fun extractYoutubeId(url: String?): String? {
         null
     }
 }
-

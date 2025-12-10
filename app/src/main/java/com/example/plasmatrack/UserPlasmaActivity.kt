@@ -72,7 +72,7 @@ fun UserPlasmaScreen() {
             }
         }
 
-        // Central images (4 clickable image buttons) - use ButtonCard like Aqua
+        // Images centrales (4 boutons image cliquables) - utiliser ButtonCard comme Aqua
         Box(modifier = Modifier.fillMaxSize().padding(top = 200.dp), contentAlignment = Alignment.TopCenter) {
             Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(20.dp)) {
 
@@ -128,7 +128,7 @@ fun UserPlasmaScreen() {
             }
         }
 
-        // Bottom nav (same style as ClockActivity)
+
         Surface(
             modifier = Modifier
                 .fillMaxWidth()

@@ -53,7 +53,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 class AquaQuickActivity2 : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // hide system bars for this activity
+        // masquer les barres système pour cette activité
         try {
             WindowCompat.setDecorFitsSystemWindows(window, false)
             val controller = WindowCompat.getInsetsController(window, window.decorView)
@@ -62,7 +62,7 @@ class AquaQuickActivity2 : ComponentActivity() {
                 it.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
             }
         } catch (_: Exception) {
-            // ignore on older devices
+            // ignorer sur les appareils plus anciens
         }
 
         enableEdgeToEdge()
@@ -77,12 +77,12 @@ class AquaQuickActivity2 : ComponentActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        // restore system bars when activity is destroyed
+        // restaurer les barres système quand l'activité est détruite
         try {
             val controller = WindowCompat.getInsetsController(window, window.decorView)
             controller?.show(WindowInsetsCompat.Type.systemBars())
         } catch (_: Exception) {
-            // ignore
+            // ignorer
         }
     }
 }
@@ -94,7 +94,7 @@ fun AquaQuickScreen2() {
     val sections = remember { mutableStateListOf<QuickGuideSection>().apply { addAll(QuickGuidesStorage.loadAll(ctx)) } }
     var showAddSection by remember { mutableStateOf(false) }
     var showAddGuide by remember { mutableStateOf<String?>(null) }
-    // states used for add flow (choice between PDF and YouTube, PDF picker)
+    // états utilisés pour le flux d'ajout (choix entre PDF et YouTube, sélection PDF)
     var showAddChoice by remember { mutableStateOf<String?>(null) }
     var showAddPdf by remember { mutableStateOf<String?>(null) }
     var pickedPdfUri by remember { mutableStateOf<Uri?>(null) }
@@ -125,7 +125,7 @@ fun AquaQuickScreen2() {
 
     DisposableEffect(Unit) { onDispose { } }
 
-    // root column with global verticalScroll to make entire screen scrollable
+    // colonne racine avec verticalScroll pour rendre l'écran entier scrollable
     val scrollState = rememberScrollState()
     Column(modifier = Modifier
         .fillMaxSize()
@@ -147,7 +147,7 @@ fun AquaQuickScreen2() {
         Spacer(modifier = Modifier.height(12.dp))
 
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-            // Add section reserved to superadmin
+            // Add section réservé au superadmin
             if (SessionManager.isSuperadmin(ctx)) {
                 Button(onClick = { showAddSection = true }) { Text("Add section") }
             } else {
@@ -169,7 +169,7 @@ fun AquaQuickScreen2() {
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        // --- affichage soit par sections (query vide) soit flat list de vidéos (query non vide)
+        // affichage soit par sections (query vide) soit flat list de vidéos (query non vide)
         if (queryText.isEmpty()) {
             // affichage normal par sections en Column (scroll géré par parent)
             Column(modifier = Modifier.fillMaxWidth()) {
@@ -179,11 +179,11 @@ fun AquaQuickScreen2() {
                         Column(modifier = Modifier.padding(12.dp)) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 // Suppression de la Box circulaire affichant la première lettre de la section
-                                // keep the section name as the primary element
+                                // garder le nom de la section comme élément principal
                                 Column(modifier = Modifier.weight(1f)) { Text(text = sec.name, style = MaterialTheme.typography.titleMedium, maxLines = 1, overflow = TextOverflow.Ellipsis) }
                                 Spacer(modifier = Modifier.width(8.dp))
-                                // when Add is clicked, ask user whether to add a PDF or a YouTube video
-                                // Add/Delete section only for superadmin
+                                // quand Add est cliqué, demander si l'utilisateur veut ajouter un PDF ou une vidéo YouTube
+                                // Add/Delete section seulement pour superadmin
                                 if (SessionManager.isSuperadmin(ctx)) {
                                     TextButton(onClick = { showAddChoice = sec.name }) { Text("Add") }
                                     TextButton(onClick = { QuickGuidesStorage.removeSection(ctx, sec.name); sections.clear(); sections.addAll(QuickGuidesStorage.loadAll(ctx)) }) { Text("Delete") }
@@ -196,15 +196,15 @@ fun AquaQuickScreen2() {
                             sec.guides.forEach { g ->
                                 Card(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp), colors = CardDefaults.cardColors(containerColor = Color(0xFFF7F7F7))) {
                                     Column(modifier = Modifier.fillMaxWidth().clickable {
-                                        // open guide: if it's a PDF (file://, content:// or endsWith .pdf) open as PDF,
-                                        // otherwise treat as YouTube/link as before
+                                        // ouvrir le guide : si c'est un PDF  ouvrir en PDF,
+                                        // sinon traiter comme une vidéo YouTube / lien
                                         try {
                                             val url = g.youtubeUrl
                                             val low = url.lowercase()
                                             val isPdf = low.endsWith(".pdf") || low.startsWith("file://") || low.startsWith("content://")
                                             if (isPdf) {
                                                 try {
-                                                    // Create a safe Uri to open the PDF
+                                                    // Créer un Uri sûr pour ouvrir le PDF
                                                     val pdfUri = when {
                                                         url.startsWith("file://") -> {
                                                             val path = Uri.parse(url).path ?: ""
@@ -217,7 +217,7 @@ fun AquaQuickScreen2() {
                                                     }
                                                     val pdfIntent = Intent(Intent.ACTION_VIEW)
                                                     if (pdfUri.scheme == "http" || pdfUri.scheme == "https") {
-                                                        // remote PDF: open in browser
+                                                        // PDF distant : ouvrir dans le navigateur
                                                         pdfIntent.data = pdfUri
                                                     } else {
                                                         pdfIntent.setDataAndType(pdfUri, "application/pdf")
@@ -225,7 +225,7 @@ fun AquaQuickScreen2() {
                                                     }
                                                     if (ctx is Activity) ctx.startActivity(pdfIntent) else { pdfIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK); ctx.startActivity(pdfIntent) }
                                                 } catch (e: ActivityNotFoundException) {
-                                                    // fallback: generic view
+                                                    // sauvegarde  vue générique
                                                     val fallback = Intent(Intent.ACTION_VIEW, Uri.parse(url))
                                                     if (ctx is Activity) ctx.startActivity(fallback) else { fallback.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK); ctx.startActivity(fallback) }
                                                 }
@@ -270,7 +270,7 @@ fun AquaQuickScreen2() {
                             val isPdf = low.endsWith(".pdf") || low.startsWith("file://") || low.startsWith("content://")
                             if (isPdf) {
                                 try {
-                                    // Create a safe Uri to open the PDF
+                                    // Créer un Uri sûr pour ouvrir le PDF
                                     val pdfUri = when {
                                         url.startsWith("file://") -> {
                                             val path = Uri.parse(url).path ?: ""

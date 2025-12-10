@@ -2,7 +2,7 @@ package com.example.plasmatrack
 
 import android.content.Context
 
-// Simple in-memory session holder. Not persisted across app restarts.
+// Simple stockage de session en mémoire. Non conservé lors du redémarrage de l'application.
 object SessionManager {
     var role: String? = null
     var firstName: String? = null
@@ -15,9 +15,9 @@ object SessionManager {
     }
 
     fun isSuperadmin(context: Context): Boolean {
-        // Prefer in-memory session
+        // Préférer la session en mémoire
         if (role != null && role.equals("superadmin", ignoreCase = true)) return true
-        // Fallback to persisted prefs
+        // Se replier sur les préférences sauvegardées
         return try {
             val sp = context.getSharedPreferences("auth", Context.MODE_PRIVATE)
             sp.getString("saved_role", "")?.equals("superadmin", ignoreCase = true) == true

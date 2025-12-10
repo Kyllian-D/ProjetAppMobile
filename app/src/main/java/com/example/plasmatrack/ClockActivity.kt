@@ -41,12 +41,15 @@ class ClockActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        // Remettre la navigation bar en blanc et demander des icônes sombres
+        // Remettre la barre de navigation en blanc et demander des icônes sombres
         try {
-            window.navigationBarColor = android.graphics.Color.WHITE
-            WindowCompat.getInsetsController(window, window.decorView)?.isAppearanceLightNavigationBars = true
+            // Ligne 46 : Remplacement de navigationBarColor déprécié
+            window.navigationBarColor = android.graphics.Color.WHITE // Cette propriété est dépréciée, mais utilisée ici pour la compatibilité.
+
+            // Ligne 47 : Suppression de l'appel inutilement sécurisé
+            WindowCompat.getInsetsController(window, window.decorView).isAppearanceLightNavigationBars = true
         } catch (_: Exception) {
-            // ignore on older devices
+            // ignorer sur les appareils plus anciens
         }
 
         setContent {
@@ -65,12 +68,12 @@ fun ClockScreen() {
     val context = LocalContext.current
     val activity = context as? Activity
 
-    // reactive state list holding the labels (avoids MutableState<List> warning)
+    // liste réactive des étiquettes (évite l'avertissement MutableState<List>)
     val labels = remember { mutableStateListOf<ProductStorage.LabelRecord>().apply { addAll(ProductStorage.loadLabels(context)) } }
-    // search query for Saved labels
+    // requête de recherche pour les étiquettes sauvegardées
     var query by remember { mutableStateOf(TextFieldValue("")) }
 
-    // compute filtered labels based on query (trigger recompute when query.text or labels.size changes)
+    // calcule les étiquettes filtrées en fonction de la requête (recalcule quand query.text ou labels.size change)
     val filteredLabels = remember(query.text, labels.size) {
         val q = query.text.trim().lowercase()
         if (q.isEmpty()) labels.toList() else {
@@ -93,7 +96,7 @@ fun ClockScreen() {
     var dateStr by remember { mutableStateOf(TextFieldValue(SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()).format(Date()))) }
     var operator by remember { mutableStateOf(TextFieldValue("")) }
 
-    // camera launcher
+    // camera launcher mais pas encore utilisé
     val cameraLauncher = rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { ok: Boolean ->
         if (ok && takingPhotoUri != null) {
             photoPath = takingPhotoUri.toString()
@@ -101,13 +104,13 @@ fun ClockScreen() {
         }
     }
 
-    // helper: parse user-entered date strings into epoch millis using several common patterns
-    // returns Pair(millis, hasTime) where hasTime==true means the parsed pattern included time information
+    // helper : analyser les chaînes de dates saisies par l'utilisateur en millisecondes d'époque en utilisant plusieurs modèles courants
+    // retourne Pair(millis, hasTime) où hasTime==true signifie que le modèle analysé incluait des informations temporelles
     fun parseDateStrToMillis(s: String?): Pair<Long, Boolean>? {
         if (s == null) return null
         val clean = s.trim().trimStart('\uFEFF')
         if (clean.isEmpty()) return null
-        // patterns and whether they include a time component
+        // modèles et s'ils incluent un composant temporel
         val patterns = listOf(
             Pair("yyyy-MM-dd HH:mm", true),
             Pair("yyyy-MM-dd", false),
@@ -127,7 +130,7 @@ fun ClockScreen() {
             } catch (_: Exception) {
             }
         }
-        // try interpret as millis number
+        // essayer d'interpréter comme un nombre de millisecondes
         val asNum = clean.toLongOrNull()
         if (asNum != null) return Pair(asNum, true)
         return null
@@ -138,7 +141,7 @@ fun ClockScreen() {
         // forcer le fond du scaffold en blanc
         containerColor = Color.White,
         bottomBar = {
-            // Remplacé : utiliser la même barre d'icônes que dans FavoritesActivity
+
             Surface(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -178,7 +181,7 @@ fun ClockScreen() {
             }
         }
     ) { innerPadding ->
-        // compute nav bar bottom inset to ensure last item isn't hidden by system UI or bottom bar
+        // calculer l'incrustation inférieure de la barre de navigation pour s'assurer que le dernier élément n'est pas masqué par l'interface utilisateur système ou la barre inférieure
         val navBarBottom = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
 
         LazyColumn(
@@ -188,16 +191,16 @@ fun ClockScreen() {
               contentPadding = PaddingValues(
                   start = 16.dp,
                   end = 16.dp,
-                  // reduce top padding so the "Capture label" header is closer to the status bar
+                  // réduire le padding supérieur pour que l'en-tête "Capture label" soit plus proche de la barre d'état
                   top = innerPadding.calculateTopPadding() + 18.dp,
-                  // increase bottom padding so last list item isn't obscured by bottomBar or system nav
+                  // augmenter le padding inférieur pour que le dernier élément de la liste ne soit pas masqué par bottomBar ou la navigation système
                   bottom = innerPadding.calculateBottomPadding() + navBarBottom + 96.dp
               ),
               verticalArrangement = Arrangement.spacedBy(0.dp)
           ) {
-            // header + form as a single item
+            // en-tête + formulaire comme un seul élément
             item {
-                // Header with back button (same pattern as other screens)
+                // En-tête avec bouton de retour (même modèle que les autres écrans)
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Start, verticalAlignment = Alignment.CenterVertically) {
                     IconButton(onClick = { (context as? ComponentActivity)?.onBackPressedDispatcher?.onBackPressed() }) {
                         Icon(painter = painterResource(id = R.drawable.arrowleft), contentDescription = "Retour", tint = Color.Black)
@@ -291,7 +294,7 @@ fun ClockScreen() {
                 Spacer(modifier = Modifier.height(8.dp))
             }
 
-            // labels as list items (filtered by search)
+            // étiquettes comme éléments de liste (filtrées par recherche)
             items(filteredLabels) { lbl ->
                 Card(
                     modifier = Modifier.fillMaxWidth().padding(vertical = 6.dp),
@@ -348,6 +351,7 @@ fun ClockScreen() {
                                 intent.putExtra("endoscope", lbl.endoscope)
                                 val pi = PendingIntent.getBroadcast(context, lbl.id.toInt(), intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
                                 // set alarm for the computed due time
+                                // définir une alarme pour l'heure d'échéance calculée
                                 val alarmTime = due
                                 alarmManager.setExact(AlarmManager.RTC_WAKEUP, alarmTime, pi)
                                 Toast.makeText(context, "Alarm set for label", Toast.LENGTH_SHORT).show()

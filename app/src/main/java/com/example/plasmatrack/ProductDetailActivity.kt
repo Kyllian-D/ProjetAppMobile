@@ -71,7 +71,7 @@ class ProductDetailActivity : ComponentActivity() {
         // Si on ouvre l'écran en mode création pour superadmin, activer le mode plein écran (masquer status/navigation bars)
         val isSuperadminMode = intent.getBooleanExtra("is_superadmin", false)
         if (isSuperadminMode) {
-            // allow drawing behind system bars
+            // autoriser le dessin derrière les barres système
             WindowCompat.setDecorFitsSystemWindows(window, false)
             val controller = WindowInsetsControllerCompat(window, window.decorView)
             // autoriser l'affichage temporaire par swipe
@@ -80,7 +80,7 @@ class ProductDetailActivity : ComponentActivity() {
         }
 
         val productId = intent.getLongExtra("product_id", -1L)
-        // Load product if exists
+        // Charger le produit s'il existe
         val product = ProductStorage.loadProducts(this).firstOrNull { it.id == productId }
 
         setContent {
@@ -93,6 +93,7 @@ class ProductDetailActivity : ComponentActivity() {
     }
 }
 
+// Copier URI vers un fichier interne et retourner le chemin absolu ou null
 private fun copyUriToInternalFile(context: Context, uri: Uri): String? {
     return try {
         val resolver = context.contentResolver
@@ -121,7 +122,7 @@ private fun copyUriToInternalFile(context: Context, uri: Uri): String? {
     }
 }
 
-// Sections loader (same key as used in ShopActivity)
+// Chargement des sections (même clé que utilisée dans ShopActivity)
 private fun loadSectionsLocal(context: Context): MutableList<String> {
     val sp = context.getSharedPreferences("shop_prefs", Context.MODE_PRIVATE)
     val joined = sp.getString("product_sections", null)
@@ -135,10 +136,10 @@ private fun loadSectionsLocal(context: Context): MutableList<String> {
 @Composable
 fun ProductDetailEditor(productId: Long, initialProduct: Product?) {
     val context = LocalContext.current
-    // determine if editing existing or creating
+    // déterminer si l'on modifie un élément existant ou si l'on en crée un nouveau
     val isCreate = productId == -1L || initialProduct == null
 
-    // Name should start empty by default to force user input
+    // Le nom doit commencer vide par défaut pour obliger l'utilisateur à saisir quelque chose
     var name by remember { mutableStateOf(initialProduct?.name ?: "") }
     var description by remember { mutableStateOf(initialProduct?.description ?: "") }
     var overview by remember { mutableStateOf(initialProduct?.description ?: "") }
@@ -148,13 +149,13 @@ fun ProductDetailEditor(productId: Long, initialProduct: Product?) {
     // image picker
     val picker = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri: Uri? ->
         uri?.let {
-            // persist permission
+
             try { context.contentResolver.takePersistableUriPermission(it, Intent.FLAG_GRANT_READ_URI_PERMISSION) } catch (_: Exception) {}
             pickedUri = it
         }
     }
 
-    // Sections state and selected section
+    // Sections état et section sélectionnée
     val sectionsState = remember { mutableStateListOf<String>().apply { addAll(loadSectionsLocal(context)) } }
     var section by remember { mutableStateOf(initialProduct?.section ?: (sectionsState.firstOrNull() ?: "ENDOSCOPE")) }
     var sectionExpanded by remember { mutableStateOf(false) }
@@ -172,7 +173,7 @@ fun ProductDetailEditor(productId: Long, initialProduct: Product?) {
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        // Image area card
+        // Zone de carte image
         Box(modifier = Modifier
             .fillMaxWidth()
             .wrapContentWidth(Alignment.CenterHorizontally)) {
@@ -199,13 +200,13 @@ fun ProductDetailEditor(productId: Long, initialProduct: Product?) {
                             }
                         }, modifier = Modifier.size(width = 350.dp, height = 420.dp).clip(RoundedCornerShape(16.dp)))
                     } else {
-                        // placeholder with clickable to add image
+                        // espace réservé cliquable pour ajouter une image
                         Box(modifier = Modifier
                             .size(width = 350.dp, height = 420.dp)
                             .clip(RoundedCornerShape(16.dp))
                             .background(Color.White)
                             .clickable { picker.launch(arrayOf("image/*")) }, contentAlignment = Alignment.Center) {
-                            Text(text = "Add image", color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
+                            Text(text = "Ajouter une image", color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
                         }
                     }
                 }
@@ -214,7 +215,7 @@ fun ProductDetailEditor(productId: Long, initialProduct: Product?) {
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        // Section selector
+        // Section selecteur
         OutlinedTextField(
             value = section,
             onValueChange = { /* read-only */ },
@@ -235,21 +236,21 @@ fun ProductDetailEditor(productId: Long, initialProduct: Product?) {
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        // Editable fields for name, overview and details
-        OutlinedTextField(value = name, onValueChange = { name = it }, label = { Text("Name") }, modifier = Modifier.fillMaxWidth())
+        // Champs modifiables pour le nom, l'aperçu et les détails
+        OutlinedTextField(value = name, onValueChange = { name = it }, label = { Text("Nom") }, modifier = Modifier.fillMaxWidth())
         Spacer(modifier = Modifier.height(8.dp))
-        OutlinedTextField(value = overview, onValueChange = { overview = it }, label = { Text("Overview") }, modifier = Modifier.fillMaxWidth(), maxLines = 4)
+        OutlinedTextField(value = overview, onValueChange = { overview = it }, label = { Text("Aperçu") }, modifier = Modifier.fillMaxWidth(), maxLines = 4)
         Spacer(modifier = Modifier.height(8.dp))
-        OutlinedTextField(value = description, onValueChange = { description = it }, label = { Text("Details") }, modifier = Modifier.fillMaxWidth(), maxLines = 6)
+        OutlinedTextField(value = description, onValueChange = { description = it }, label = { Text("Détails") }, modifier = Modifier.fillMaxWidth(), maxLines = 6)
 
         Spacer(modifier = Modifier.height(12.dp))
 
         // Buttons Save / Cancel
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             Button(onClick = {
-                // save logic: if new -> add product, else update
+
                 if (name.isBlank()) {
-                    Toast.makeText(context, "Name is required", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Le nom est requis", Toast.LENGTH_SHORT).show()
                     return@Button
                 }
                 val products = ProductStorage.loadProducts(context)
@@ -265,7 +266,7 @@ fun ProductDetailEditor(productId: Long, initialProduct: Product?) {
                     val newProd = Product(id = System.currentTimeMillis(), name = name, description = description, section = section, imagePath = finalImagePath)
                     products.add(0, newProd)
                 } else {
-                    // in this branch initialProduct is guaranteed non-null, use direct property access
+                    // dans cette branche, initialProduct est garanti non nul, utilisez l'accès direct aux propriétés
                     val targetId = initialProduct.id
                     val idx = products.indexOfFirst { it.id == targetId }
                      if (idx >= 0) {
@@ -273,19 +274,19 @@ fun ProductDetailEditor(productId: Long, initialProduct: Product?) {
                         products[idx] = updated
                     }
                 }
-                // Persist sections in case user selected/created a new one via other flows
-                // (no change here) -- sections are managed from Shop screen
+                // Conserver les sections au cas où l'utilisateur en aurait sélectionné/créé une nouvelle via d'autres flux
+                // (pas de changement ici) -- les sections sont gérées depuis l'écran Boutique
                 ProductStorage.saveProducts(context, products)
-                Toast.makeText(context, "Saved", Toast.LENGTH_SHORT).show()
-                // return OK so caller can refresh
+                Toast.makeText(context, "Enregistré", Toast.LENGTH_SHORT).show()
+                // retourne OK pour que l'appelant puisse actualiser
                 (context as? Activity)?.setResult(Activity.RESULT_OK)
                 (context as? Activity)?.finish()
              }) {
-                 Text(text = "Save")
+                 Text(text = "Sauvegarder")
              }
 
             Button(onClick = { (context as? ComponentActivity)?.onBackPressedDispatcher?.onBackPressed() }) {
-                Text(text = "Cancel")
+                Text(text = "Annuler")
             }
         }
     }

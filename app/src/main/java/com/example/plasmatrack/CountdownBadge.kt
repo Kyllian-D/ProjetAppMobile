@@ -15,9 +15,10 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 
 
+// badge de compte à rebours (indicateur visuel uniquement)
 @Composable
 fun CountdownBadge(targetMillis: Long, size: Dp = 32.dp, modifier: Modifier = Modifier) {
-    // tick every second
+    // mise à jour toutes les secondes
     var now by remember { mutableStateOf(System.currentTimeMillis()) }
     LaunchedEffect(targetMillis) {
         while (true) {
@@ -29,13 +30,13 @@ fun CountdownBadge(targetMillis: Long, size: Dp = 32.dp, modifier: Modifier = Mo
     val remaining = (targetMillis - now).coerceAtLeast(0L)
     val remainingDays = remaining / (1000L * 60L * 60L * 24L)
 
-    // decide color based on remaining time
+    // déterminer la couleur en fonction du temps restant
     val targetColor = when {
-        remaining == 0L -> Color(0xFFB00020) // past due -> red (Material error)
-        remainingDays >= 2L && remainingDays <= 7L -> Color(0xFF4CAF50) // green
-        remainingDays >= 1L && remainingDays < 2L -> Color(0xFFFFA000) // orange
-        remainingDays < 1L -> Color(0xFFB00020) // red for hours
-        else -> Color(0xFF4CAF50) // default green
+        remaining == 0L -> Color(0xFFB00020)
+        remainingDays >= 2L && remainingDays <= 7L -> Color(0xFF4CAF50)
+        remainingDays >= 1L && remainingDays < 2L -> Color(0xFFFFA000)
+        remainingDays < 1L -> Color(0xFFB00020)
+        else -> Color(0xFF4CAF50)
     }
 
     val animatedColor by animateColorAsState(targetColor)
@@ -49,21 +50,21 @@ fun CountdownBadge(targetMillis: Long, size: Dp = 32.dp, modifier: Modifier = Mo
             .background(animatedColor),
         contentAlignment = Alignment.Center
     ) {
-        // No text inside the badge — pure visual indicator (color only)
+        // Aucun texte à l'intérieur du badge — indicateur visuel pur (couleur uniquement)
     }
 }
 
-// Preview helpers (only used in Android Studio preview)
+// Prévisualisations (utilisées uniquement dans l'aperçu Android Studio)
 @Composable
 fun CountdownBadgePreviewGreen() {
-    // 3 days from now
+    // 3 jours à partir de maintenant
     val threeDays = System.currentTimeMillis() + 3L * 24L * 60L * 60L * 1000L
     CountdownBadge(targetMillis = threeDays)
 }
 
 @Composable
 fun CountdownBadgePreviewRed() {
-    // 5 hours from now
+    // 5 heures à partir de maintenant
     val fiveHours = System.currentTimeMillis() + 5L * 60L * 60L * 1000L
     CountdownBadge(targetMillis = fiveHours, size = 24.dp)
 }

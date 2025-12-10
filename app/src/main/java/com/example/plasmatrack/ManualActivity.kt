@@ -44,15 +44,15 @@ import androidx.core.view.WindowInsetsControllerCompat
 
 class ManualActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
-        // Migrate legacy plasma items from ManualStorage to PlasmaManualStorage (if any)
+        // Migrer les éléments Plasma hérités depuis ManualStorage vers PlasmaManualStorage (si présents)
         migratePlasmaFromManualStorage(this)
-        // Always sanitize ManualStorage on startup to remove any Plasma-related items
+        // Toujours nettoyer ManualStorage au démarrage pour supprimer les éléments liés à Plasma
         sanitizeManualStorage(this)
-        // Ensure bundled default instructions PDF and section exist (one-time)
+        // S'assurer que le PDF d'instructions embarqué et la section existent (opération unique)
         ensureDefaultInstructions(this)
 
         super.onCreate(savedInstanceState)
-        // keep system bars behavior similar to QuickGuides
+        // garder le comportement des barres système similaire à QuickGuides
         try {
             WindowCompat.setDecorFitsSystemWindows(window, false)
             val controller = WindowCompat.getInsetsController(window, window.decorView)
@@ -153,7 +153,7 @@ fun ManualScreen() {
                                     Column(modifier = Modifier
                                         .fillMaxWidth()
                                         .clickable {
-                                            // open pdf
+                                            // ouvrir le PDF
                                             try {
                                                 val url = it.fileUrl
                                                 val pdfUri = when {
@@ -262,7 +262,7 @@ fun ManualScreen() {
             AlertDialog(onDismissRequest = { showAddItem = null }, confirmButton = {
                 Button(onClick = {
                     if (title.isNotBlank()) {
-                        // open file picker
+                        // ouvrir le sélecteur de fichier
                         showPickPdfForSection = section
                         showAddItem = null
                     }
@@ -318,15 +318,15 @@ fun ManualScreen() {
     }
 }
 
-// Copy bundled raw PDF into filesDir and add default section/item if not already done
+// Copier le PDF brut inclus dans filesDir et ajouter une section/élément par défaut si ce n'est pas déjà fait
 private fun ensureDefaultInstructions(ctx: Context) {
     try {
         val prefs = ctx.getSharedPreferences("manual_guides_prefs", Context.MODE_PRIVATE)
-        // Use a dedicated prefs key for Aqua default instructions to avoid colliding with Plasma's prefs
+        // Utilisez une clé de préférences dédiée pour les instructions par défaut d'Aqua afin d'éviter de rentrer en conflit avec les préférences de Plasma
         val doneKey = "default_aqua_instructions_added_v1"
         if (prefs.getBoolean(doneKey, false)) return
 
-        // Resource name (file placed in res/raw as instructionsaquatyphoon.pdf)
+        // Nom de la ressource (fichier placé dans res/raw sous le nom instructionsaquatyphoon.pdf)
         val resName = "instructionsaquatyphoon"
         val resId = ctx.resources.getIdentifier(resName, "raw", ctx.packageName)
         var input: InputStream? = null
@@ -345,7 +345,7 @@ private fun ensureDefaultInstructions(ctx: Context) {
 
         val fileUri = Uri.fromFile(destFile).toString()
 
-        // Create the AQUA default section and add the bundled PDF there
+        // Créer la section par défaut AQUA et y ajouter le PDF fourni
         ManualStorage.addSection(ctx, "instructions")
         ManualStorage.addItem(ctx, "instructions", "Instructions use AquaTYPHOON", fileUri, "")
 
@@ -356,7 +356,7 @@ private fun ensureDefaultInstructions(ctx: Context) {
     }
 }
 
-// Remove any Plasma-related sections/items from the ManualStorage to ensure Aqua-only content
+// Supprimer toutes les sections/éléments liés à Plasma du ManualStorage pour garantir un contenu uniquement Aqua
 private fun sanitizeManualStorage(ctx: Context) {
     try {
         val existing = ManualStorage.loadAll(ctx)
@@ -375,7 +375,7 @@ private fun sanitizeManualStorage(ctx: Context) {
     }
 }
 
-// Move any 'plasma' sections/items from ManualStorage (legacy) into PlasmaManualStorage
+// Déplacer toutes les sections/articles 'plasma' de ManualStorage (hérité) vers PlasmaManualStorage
 private fun migratePlasmaFromManualStorage(ctx: Context) {
     try {
         val raw = ManualStorage.loadAllRaw(ctx)
@@ -402,10 +402,7 @@ private fun migratePlasmaFromManualStorage(ctx: Context) {
                 }
             }
         }
-        if (migrated) {
-            // overwrite manual storage with remaining non-plasma content
-            ManualStorage.saveAll(ctx, remaining)
-        }
+        if (migrated) ManualStorage.saveAll(ctx, remaining)
     } catch (e: Exception) {
         e.printStackTrace()
     }

@@ -38,7 +38,7 @@ import androidx.core.view.WindowInsetsControllerCompat
 
 private const val TAG = "PlasmaConnCards"
 
-// Simple data model for a connection card row
+
 data class ConnectionCardItem2(
     val brand: String,
     val connectionSet: String,
@@ -46,13 +46,13 @@ data class ConnectionCardItem2(
     val pentaxItem: String = "",
     val cycleCode: String = "",
     val connectionCard: String,
-    val raw: String? = null // raw CSV line for debug/full display
+    val raw: String? = null
 )
 
 class PlasmaConnectionCardsActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // hide system bars for this activity (keeps consistent behavior with Aqua)
+        // masquer les barres système pour cette activité (maintient un comportement cohérent avec Aqua)
         try {
             WindowCompat.setDecorFitsSystemWindows(window, false)
             val controller = WindowCompat.getInsetsController(window, window.decorView)
@@ -61,7 +61,7 @@ class PlasmaConnectionCardsActivity : ComponentActivity() {
                 it.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
             }
         } catch (_: Exception) {
-            // ignore on older devices
+
         }
         enableEdgeToEdge()
         setContent {
@@ -74,7 +74,7 @@ class PlasmaConnectionCardsActivity : ComponentActivity() {
     }
 }
 
-// NOTE: use a distinct filename for Plasma connection cards so it does not overwrite the generic connection_cards.csv
+// REMARQUE : utilisez un nom de fichier distinct pour les cartes de connexion Plasma afin de ne pas écraser le fichier générique connection_cards.csv
 private const val PLASMA_CONN_FILE = "plasma_connection_cards.csv"
 
 private fun copyUriToInternalFile2(context: android.content.Context, uri: Uri, destName: String = PLASMA_CONN_FILE): Boolean {
@@ -93,7 +93,7 @@ private fun copyUriToInternalFile2(context: android.content.Context, uri: Uri, d
     }
 }
 
-// Modified loader: accepts usePlus to prefer the "PlasmaTYPHOON+" columns when true
+// Chargeur modifié : accepte usePlus pour privilégier les colonnes "PlasmaTYPHOON+" lorsqu'il est vrai
 fun loadConnectionCardsFromFile2(context: android.content.Context, usePlus: Boolean = false, fileName: String = PLASMA_CONN_FILE): List<ConnectionCardItem2> {
     val list = mutableListOf<ConnectionCardItem2>()
     try {
@@ -108,7 +108,7 @@ fun loadConnectionCardsFromFile2(context: android.content.Context, usePlus: Bool
             val parts = parseCsvLinePlasma(rawLine)
 
             if (!usePlus) {
-                // Plasma: require at least 6 columns
+                // Plasma a besoin d'au moins 6 colonnes, map 0,1,2,3,4,5
                 if (parts.size >= 6) {
                     val brand = parts[0].trim()
                     if (brand.isBlank()) continue
@@ -120,7 +120,7 @@ fun loadConnectionCardsFromFile2(context: android.content.Context, usePlus: Bool
                     list.add(ConnectionCardItem2(brand = brand, connectionSet = connectionSet, plasmabioticsRef = plasmRef, pentaxItem = pentax, cycleCode = cycle, connectionCard = card, raw = rawLine))
                 }
             } else {
-                // Plasma+: require at least 10 columns, map 0,1,6,7,8,9
+                // Plasma+ a besoin d'au moins 10 colonnes, map 0,1,6,7,8,9
                 if (parts.size >= 10) {
                     val brand = parts[0].trim()
                     if (brand.isBlank()) continue
@@ -139,7 +139,7 @@ fun loadConnectionCardsFromFile2(context: android.content.Context, usePlus: Bool
     return list
 }
 
-// very small CSV parser for Plasma file (local to this file) that handles simple quoted fields and both comma and semicolon separators
+// très petit analyseur CSV pour fichier Plasma (local à ce fichier) qui gère des champs cités simples et à la fois des séparateurs virgule et point-virgule
 private fun parseCsvLinePlasma(line: String): List<String> {
     val result = mutableListOf<String>()
     val s = line.trim().trimStart('\uFEFF')
@@ -169,7 +169,7 @@ private fun parseCsvLinePlasma(line: String): List<String> {
     return result
 }
 
-// Detect column indices from header for debugging (reuses similar logic as loader)
+// Détecter les indices de colonnes à partir de l'en-tête pour le débogage (réutilise une logique similaire à celle du chargeur)
 private fun detectIndicesFromHeader(headerLine: String, usePlus: Boolean): Map<String, Int> {
     val headers = parseCsvLinePlasma(headerLine).map { it.lowercase().trim() }
     fun findIndexPrefer(headers: List<String>, keys: List<String>, preferPlus: Boolean): Int {
@@ -233,10 +233,10 @@ fun PlasmaConnectionCardsScreen() {
     var showConfirmImport by remember { mutableStateOf(false) }
     var selectedItem by remember { mutableStateOf<ConnectionCardItem2?>(null) }
     var showDetail by remember { mutableStateOf(false) }
-    // favorites for plasma connection cards (mutable state list)
+    // favoris pour les cartes de connexion plasma (liste d'état mutable)
     val connFavoritesState = remember { mutableStateListOf<String>().apply { addAll(ProductStorage.loadConnFavorites(context)) } }
 
-    // reload when tab changes
+    // recharger lorsque l'onglet change
     LaunchedEffect(selectedTabPlasma) {
         items = loadConnectionCardsFromFile2(context, usePlus = selectedTabPlasma == 1)
     }
@@ -249,7 +249,7 @@ fun PlasmaConnectionCardsScreen() {
         uri?.let {
             val ok = copyUriToInternalFile2(context, it)
             if (ok) {
-                // Debug: read the raw file and report header / line count
+                //  lire le fichier brut et rapporter l'en-tête / le nombre de lignes
                 try {
                     val f = File(context.filesDir, PLASMA_CONN_FILE)
                     val allLines = f.readLines()
@@ -257,7 +257,7 @@ fun PlasmaConnectionCardsScreen() {
                     val headerLine = if (allLines.isNotEmpty()) allLines[0] else ""
                     val indices = detectIndicesFromHeader(headerLine, selectedTabPlasma == 1)
 
-                    // reload parsed items
+                    // recharger les éléments analysés
                     items = loadConnectionCardsFromFile2(context, usePlus = selectedTabPlasma == 1)
 
                     val debugMsg = "File lines: $totalLines, Parsed rows: ${items.size}, Header: ${headerLine.take(200)}"
@@ -295,7 +295,7 @@ fun PlasmaConnectionCardsScreen() {
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        // --- New tabs for PlasmaTYPHOON / PlasmaTYPHOON+ ---
+        //  New tabs pour PlasmaTYPHOON / PlasmaTYPHOON+
         TabRow(selectedTabIndex = selectedTabPlasma, modifier = Modifier.fillMaxWidth(), containerColor = Color.Transparent) {
             Tab(selected = selectedTabPlasma == 0, onClick = { selectedTabPlasma = 0 }) {
                 Box(modifier = Modifier.padding(vertical = 8.dp), contentAlignment = Alignment.Center) {

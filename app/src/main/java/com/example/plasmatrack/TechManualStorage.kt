@@ -5,7 +5,7 @@ import androidx.core.content.edit
 import org.json.JSONArray
 import org.json.JSONObject
 
-// Data model for technical manuals
+// Modèle de données pour les manuels techniques
 data class TechManualItem(val id: Long = System.currentTimeMillis(), val title: String, val fileUrl: String, val description: String = "")
 data class TechManualSection(val name: String, val items: MutableList<TechManualItem> = mutableListOf())
 

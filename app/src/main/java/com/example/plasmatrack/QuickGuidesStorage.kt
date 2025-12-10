@@ -5,8 +5,8 @@ import androidx.core.content.edit
 import org.json.JSONArray
 import org.json.JSONObject
 
-// Simple storage for quick guides (sections + list of guides per section)
-// Stored in SharedPreferences as JSON under key "quick_guides_v1"
+// Stockage simple pour les guides rapides (sections + liste des guides par section)
+// Stocké dans SharedPreferences sous forme de JSON avec la clé "quick_guides_v1"
 
 // Ajout du champ description
 data class QuickGuide(val id: Long = System.currentTimeMillis(), val title: String, val youtubeUrl: String, val description: String = "")
@@ -73,7 +73,7 @@ object QuickGuidesStorage {
         saveAll(context, list)
     }
 
-    // Signature modifiée : ajout du paramètre description
+    // Signature modifiée ajout du paramètre description
     fun addGuide(context: Context, sectionName: String, title: String, youtubeUrl: String, description: String = "") {
         val list = loadAll(context)
         val sec = list.firstOrNull { it.name.equals(sectionName, ignoreCase = true) } ?: run {

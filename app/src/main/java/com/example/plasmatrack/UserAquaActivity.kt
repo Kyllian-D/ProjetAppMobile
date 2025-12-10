@@ -155,7 +155,7 @@ fun UserAquaScreen() {
             }
         }
 
-        // Bottom nav (white background with four standard icons)
+        // Navigation inférieure (fond blanc avec quatre icônes standard)
         Surface(
             modifier = Modifier
                 .fillMaxWidth()
@@ -235,7 +235,7 @@ fun UserAquaScreen() {
      }
 }
 
-// Reusable card with shadow, rounded corners, and image offset to "remonter" l'image
+// Carte réutilisable avec ombre, coins arrondis et image décalée pour "remonter" l'image
 @Composable
 fun ButtonCard(imageRes: Int, contentDesc: String, onClick: () -> Unit) {
     Box(

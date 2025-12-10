@@ -41,8 +41,8 @@ import androidx.core.view.WindowInsetsControllerCompat
 
 private fun ensureDefaultPlasmaInstructions(ctx: Context) {
     try {
-        // Always ensure PlasmaManualStorage contains exactly one section named "instructions"
-        // with the bundled PDF titled "Instructions use PlasmaTYPHOON".
+        // Assurez-vous toujours que PlasmaManualStorage contient exactement une section nommée "instructions"
+        // avec le PDF inclus intitulé "Instructions d'utilisation de PlasmaTYPHOON".
         val resName = "instructionsplasmatyphoon"
         val resId = ctx.resources.getIdentifier(resName, "raw", ctx.packageName)
         var input: InputStream? = null
@@ -51,7 +51,7 @@ private fun ensureDefaultPlasmaInstructions(ctx: Context) {
         } else {
             try { input = ctx.assets.open("$resName.pdf") } catch (_: Exception) { input = null }
         }
-        // If the bundled PDF exists, copy it into filesDir and build a fileUri; otherwise use empty string
+        // Si le PDF inclus existe, copiez-le dans filesDir et construisez un fileUri ; sinon, utilisez une chaîne vide
         var fileUri = ""
         if (input != null) {
             val destName = "$resName.pdf"
@@ -66,7 +66,7 @@ private fun ensureDefaultPlasmaInstructions(ctx: Context) {
             }
         }
 
-        // Overwrite Plasma storage to contain only the one instructions section with the single PDF
+        // Écraser le stockage Plasma pour ne contenir que la section des instructions avec le PDF unique
         val item = PlasmaManualItem(id = System.currentTimeMillis(), title = "Instructions use PlasmaTYPHOON", fileUrl = fileUri, description = "")
         val sec = PlasmaManualSection(name = "instructions", items = mutableListOf(item))
         PlasmaManualStorage.saveAll(ctx, listOf(sec))
@@ -75,7 +75,7 @@ private fun ensureDefaultPlasmaInstructions(ctx: Context) {
 
 class PlasmaManualActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
-        // Ensure default plasma instructions exist
+        // Assurez-vous que les instructions plasma par défaut existent
         ensureDefaultPlasmaInstructions(this)
 
         super.onCreate(savedInstanceState)
@@ -258,7 +258,7 @@ fun PlasmaManualScreen() {
             }
         }
 
-        // Dialogs
+        // Dialogues
         if (showAddSection) {
             var input by remember { mutableStateOf("") }
             AlertDialog(onDismissRequest = { showAddSection = false }, confirmButton = {

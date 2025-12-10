@@ -40,8 +40,8 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 
 /**
- * Ensure default tech manual is present. Copy res/raw/aquatyphoon_technical_manual_user.pdf to filesDir
- * and create section 'instructions' with an item titled "Technical Manual for User AquaTYPHOON".
+ * Assurez-vous que le manuel technique par défaut est présent. Copiez res/raw/aquatyphoon_technical_manual_user.pdf dans filesDir
+ * et créez une section 'instructions' avec un élément intitulé "Manuel technique pour l'utilisateur AquaTYPHOON".
  */
 private fun ensureDefaultTechManuals(ctx: Context) {
     try {
@@ -65,7 +65,7 @@ private fun ensureDefaultTechManuals(ctx: Context) {
         input.close()
 
         val fileUri = Uri.fromFile(destFile).toString()
-        // Use dedicated section for tech manuals
+        // Utiliser une section dédiée aux manuels techniques
         TechManualStorage.addSection(ctx, "instructions_tech")
         TechManualStorage.addItem(ctx, "instructions_tech", "Technical Manual for User AquaTYPHOON", fileUri, "")
 
@@ -75,7 +75,7 @@ private fun ensureDefaultTechManuals(ctx: Context) {
 
 class TechManualActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
-        // ensure default tech manual exists
+        // s'assurer que le manuel technique par défaut existe
         ensureDefaultTechManuals(this)
 
         super.onCreate(savedInstanceState)
@@ -259,7 +259,7 @@ fun TechManualScreen() {
             }
         }
 
-        // Dialogs (Add section / Add item / Pick PDF flows) - similar to ManualActivity
+        // Dialogues (Ajouter une section / Ajouter un élément / Sélections de PDF) - similaire à ManualActivity
         if (showAddSection) {
             var input by remember { mutableStateOf("") }
             AlertDialog(onDismissRequest = { showAddSection = false }, confirmButton = {

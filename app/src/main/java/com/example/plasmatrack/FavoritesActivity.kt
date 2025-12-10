@@ -112,7 +112,7 @@ fun FavoritesScreen() {
     var selectedPlasma by remember { mutableStateOf<ConnectionCardItem2?>(null) }
     var selectedPlasmaPlus by remember { mutableStateOf<ConnectionCardItem2?>(null) }
 
-    // decide superadmin using centralized session manager (in-memory first)
+    // déterminer si l'utilisateur est superadmin via le gestionnaire de session centralisé (mémoire d'abord)
     val isSuperadmin = SessionManager.isSuperadmin(context)
 
     Box(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
@@ -133,11 +133,11 @@ fun FavoritesScreen() {
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            // Products favorites
+            // Favorites des produits
             val favProducts = products.filter { favoritesList.contains(it.id) }
 
-            // Use zero spacedBy and control spacing per-card to guarantee exact gap
-            // style for section titles (bigger + underlined)
+            // Utiliser spacedBy=0 et gérer l'écart par carte pour garantir une séparation exacte
+            // style pour les titres de sections (plus grand + souligné)
             val sectionTitleStyle = MaterialTheme.typography.titleMedium.copy(
                 fontSize = 16.sp,
                 fontWeight = FontWeight.SemiBold,
@@ -147,7 +147,7 @@ fun FavoritesScreen() {
             LazyColumn(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(0.dp)) {
                 item { Text(text = "Products", style = sectionTitleStyle) }
                 items(favProducts) { p ->
-                    // card clickable -> open product detail (same behavior as in ShopScreen)
+                    // Carte cliquable : ouvre le détail du produit (même comportement que dans ShopScreen)
                     val cardModifier = Modifier
                         .fillMaxWidth()
                         .clickable {
@@ -164,7 +164,7 @@ fun FavoritesScreen() {
                             }
                         }
 
-                    // Card produit : fond gris clair (au lieu de blanc) et uniquement bouton de suppression
+                    // Carte produit : fond gris clair (au lieu de blanc) et uniquement bouton de suppression
                     Card(modifier = cardModifier.padding(vertical = gap), shape = RoundedCornerShape(8.dp), colors = CardDefaults.cardColors(containerColor = Color(0xFFF5F5F5))) {
                          Column(modifier = Modifier.padding(12.dp)) {
                              Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
@@ -172,7 +172,7 @@ fun FavoritesScreen() {
                                  Spacer(modifier = Modifier.weight(1f))
                                  Text(text = p.section, color = Color.Gray)
                                  Spacer(modifier = Modifier.size(8.dp))
-                                 // remove button (grey) — seul bouton d'action sur cette page
+                                 // bouton supprimer (gris) — seul bouton d'action sur cette page
                                  IconButton(onClick = {
                                     favoritesList.remove(p.id)
                                     ProductStorage.saveFavorites(context, favoritesList.toSet())
@@ -186,7 +186,7 @@ fun FavoritesScreen() {
                      }
                  }
 
-                // Aqua, Plasma, Plasma+ fav sections kept as before
+                // Sections Aqua, Plasma et Plasma+ favorites conservées comme avant
                 item { Spacer(modifier = Modifier.height(12.dp)); Text(text = "AquaTYPHOON Connection Cards", style = sectionTitleStyle) }
 
                 val aquaFavItems = aquaItems.filter { item ->
@@ -289,7 +289,7 @@ fun FavoritesScreen() {
             }
         }
 
-        // Barre d'icônes : fond blanc + légère élévation pour ne pas survoler le contenu
+        // Barre d'icônes  fond blanc + légère élévation pour ne pas survoler le contenu
         Surface(
             modifier = Modifier
                 .fillMaxWidth()
@@ -333,7 +333,7 @@ fun FavoritesScreen() {
             }
         }
 
-        // Detail dialogs for connection items (unchanged)
+        // Dialogs de détail pour les items de connexion (inchangés)
         if (selectedAqua != null) {
             val it = selectedAqua!!
             AlertDialog(onDismissRequest = { selectedAqua = null }, confirmButton = { TextButton(onClick = { selectedAqua = null }) { Text("Close") } }, title = { Text(it.brand) }, text = {

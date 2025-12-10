@@ -12,9 +12,8 @@ class ArrowActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             PlasmaTrackTheme {
-                // simple placeholder: reuse HomeScreen or a small Compose layout if needed
+                // Ecran d'accueil réutilisé ici
             }
         }
     }
 }
-

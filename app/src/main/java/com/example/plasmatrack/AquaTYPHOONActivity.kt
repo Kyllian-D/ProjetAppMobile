@@ -46,7 +46,7 @@ class AquaTYPHOONActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        // Remettre la navigation bar en blanc et demander des icônes sombres
+        // Remettre la barre de navigation en blanc et demander des icônes sombres
         try {
             window.navigationBarColor = android.graphics.Color.WHITE
             val insetsController = WindowCompat.getInsetsController(window, window.decorView)
@@ -68,7 +68,7 @@ fun AquaTYPHOONScreen() {
 
     Box(modifier = Modifier
         .fillMaxSize()
-        .background(Color.Transparent) // plus de fond blanc — transparent pour laisser la thème s'appliquer
+        .background(Color.Transparent) // plus de fond blanc transparent pour laisser la thème s'appliquer
     ) {
         // Header : abaisser le titre en le déplaçant vers le bas (120.dp)
         Box(modifier = Modifier.fillMaxWidth().padding(start = 24.dp, end = 24.dp, top = 55.dp, bottom = 0.dp)) {
@@ -88,7 +88,7 @@ fun AquaTYPHOONScreen() {
         Box(modifier = Modifier.fillMaxSize().padding(top = 200.dp), contentAlignment = Alignment.TopCenter) {
             Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(16.dp)) {
 
-                // Image 1 : sales
+                // Image 1 sales
                 Box(modifier = Modifier
                     .fillMaxWidth(0.92f)
                     .height(92.dp)
@@ -108,7 +108,7 @@ fun AquaTYPHOONScreen() {
 
                 Spacer(modifier = Modifier.height(12.dp))
 
-                // Image 2 : technical
+                // Image 2 technical
                 Box(modifier = Modifier
                     .fillMaxWidth(0.92f)
                     .height(92.dp)
@@ -128,7 +128,7 @@ fun AquaTYPHOONScreen() {
 
                 Spacer(modifier = Modifier.height(12.dp))
 
-                // Image 3 : user
+                // Image 3 user
                 Box(modifier = Modifier
                     .fillMaxWidth(0.92f)
                     .height(92.dp)
@@ -157,7 +157,7 @@ fun AquaTYPHOONScreen() {
             }
         }
 
-        // Bottom nav (same style as ClockActivity)
+        // Barre de navigation en bas
         Surface(
             modifier = Modifier
                 .fillMaxWidth()
@@ -173,7 +173,7 @@ fun AquaTYPHOONScreen() {
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Home -> ouvre HomeActivity
+
                 IconButton(onClick = {
                     val intent = Intent(context, HomeActivity::class.java)
                     try {
@@ -205,7 +205,7 @@ fun AquaTYPHOONScreen() {
                 }
 
                 IconButton(onClick = {
-                    // Open Settings (ParametersActivity) when tapping the user icon
+                    // Ouvre les paramètres (ParametersActivity) en tapant sur l'icône utilisateur
                     val intent = Intent(context, ParametersActivity::class.java)
                     try {
                         if (context is Activity) context.startActivity(intent) else {

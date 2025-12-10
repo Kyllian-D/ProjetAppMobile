@@ -5,7 +5,7 @@ import androidx.core.content.edit
 import org.json.JSONArray
 import org.json.JSONObject
 
-// Data model for Plasma manuals
+// Modèle de données pour les manuels Plasma
 data class PlasmaManualItem(val id: Long = System.currentTimeMillis(), val title: String, val fileUrl: String, val description: String = "")
 data class PlasmaManualSection(val name: String, val items: MutableList<PlasmaManualItem> = mutableListOf())
 

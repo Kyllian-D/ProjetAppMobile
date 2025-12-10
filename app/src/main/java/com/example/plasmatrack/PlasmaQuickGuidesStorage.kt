@@ -5,8 +5,8 @@ import androidx.core.content.edit
 import org.json.JSONArray
 import org.json.JSONObject
 
-// Reuse QuickGuide and QuickGuideSection data classes defined in QuickGuidesStorage.kt
-// Separate storage for Plasma quick guides (different shared prefs key)
+// Réutiliser les classes de données QuickGuide et QuickGuideSection définies dans QuickGuidesStorage.kt
+// Stockage séparé pour les guides rapides Plasma (clé prefs partagée différente)
 
 object PlasmaQuickGuidesStorage {
     private const val PREF = "plasma_quick_guides_prefs"

@@ -69,7 +69,7 @@ class LoginActivity : ComponentActivity() {
         // Pré-créer un compte de test uniquement si aucun compte n'existe encore,
         // afin de ne pas écraser un compte créé par l'utilisateur au redémarrage.
         val prefs = getSharedPreferences("auth", MODE_PRIVATE)
-        // One-time cleanup: handle leftover inconsistent superadmin keys BEFORE auto-login
+        // Nettoyage ponctuel : gérer les clés superadmin incohérentes restantes AVANT la connexion automatique
         try {
             val cleanupDone = prefs.getBoolean("cleanup_superadmin_done", false)
             val storedUser = prefs.getString("saved_user", null)
@@ -77,7 +77,7 @@ class LoginActivity : ComponentActivity() {
             val storedRole = prefs.getString("saved_role", null)
             val rememberUser = prefs.getString("remember_user", null)
 
-            // If stored_user == 'superadmin' but not the hardcoded account, wipe the corrupt keys once.
+            // Si stored_user == 'superadmin' mais pas le compte codé en dur, supprimer les clés corrompues une fois.
             if (!cleanupDone && storedUser != null && storedUser.equals("superadmin", ignoreCase = true) && storedPass != "888") {
                 prefs.edit {
                     remove("saved_user")
@@ -90,7 +90,7 @@ class LoginActivity : ComponentActivity() {
                 }
             }
 
-            // If saved_role == 'superadmin' but the stored user is NOT the hardcoded superadmin account, remove the saved_role once.
+            // Si saved_role == 'superadmin' mais l'utilisateur enregistré n'est PAS le compte superadmin codé en dur, supprimer saved_role une fois.
             val cleanupRoleDone = prefs.getBoolean("cleanup_superadmin_role_done", false)
             if (!cleanupRoleDone && storedRole != null && storedRole.equals("superadmin", ignoreCase = true)) {
                 if (!(storedUser != null && storedUser.equals("superadmin", ignoreCase = true) && storedPass == "888")) {
@@ -103,9 +103,9 @@ class LoginActivity : ComponentActivity() {
                 }
             }
 
-            // If remember_user is set to superadmin but the hardcoded superadmin credentials are not persisted, clear the remember flags
+            // Si remember_user est défini sur superadmin mais que les identifiants superadmin codés en dur ne sont pas enregistrés, effacer les drapeaux de mémorisation
             if (!rememberUser.isNullOrBlank() && rememberUser.equals("superadmin", ignoreCase = true)) {
-                // If the stored_pass is not the hardcoded superadmin pass, or saved_user is not the hardcoded, clear remember
+                // Si le mot de passe enregistré n'est pas celui codé en dur pour superadmin, ou que l'utilisateur enregistré n'est pas superadmin, effacer les drapeaux
                 if (!(storedUser != null && storedUser.equals("superadmin", ignoreCase = true) && storedPass == "888")) {
                     prefs.edit {
                         remove("remember")
@@ -114,10 +114,10 @@ class LoginActivity : ComponentActivity() {
                 }
             }
         } catch (_: Exception) {
-            // ignore errors during cleanup
+            // ignorer les erreurs pendant le nettoyage
         }
 
-        // Ensure there is a default test account if none exists
+        // S'assurer qu'il existe un compte de test par défaut si aucun n'existe
         if (prefs.getString("saved_user", null).isNullOrBlank()) {
             prefs.edit {
                 putString("saved_user", "kyllian")
@@ -126,14 +126,14 @@ class LoginActivity : ComponentActivity() {
             }
         }
 
-        // If user previously asked to be remembered, skip login and go straight to Home
+        // Si l'utilisateur a précédemment demandé à être mémorisé, ignorer la connexion et aller directement à l'accueil
         try {
             val remember = prefs.getBoolean("remember", false)
             if (remember) {
-                // If remember_user exists and equals superadmin but credentials are not the hardcoded ones, avoid auto-login
+                // Si remember_user existe et est égal à superadmin mais que les identifiants ne sont pas ceux codés en dur, éviter la connexion automatique
                 val rememberUser = prefs.getString("remember_user", null)
                 if (rememberUser != null && rememberUser.equals("superadmin", ignoreCase = true)) {
-                    // Do not auto-login as superadmin
+                    // Ne pas se connecter automatiquement en tant que superadmin
                 } else {
                     startActivity(Intent(this, HomeActivity::class.java))
                     finish()
@@ -144,7 +144,7 @@ class LoginActivity : ComponentActivity() {
 
         setContent {
             PlasmaTrackTheme {
-                // Use theme background instead of hard-coded white so all screens match
+                // Utiliser l'arrière-plan du thème au lieu du blanc codé en dur pour que tous les écrans correspondent
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
                     LoginScreen()
                 }
@@ -158,13 +158,13 @@ class LoginActivity : ComponentActivity() {
 fun LoginScreen() {
     var selectedTab by remember { mutableStateOf(0) } // 0 = Log In, 1 = Sign Up
 
-    // Common fields
+    // Champs communs
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
     var rememberMe by remember { mutableStateOf(false) }
 
-    // Sign up specific fields
+    // Champs spécifiques à l'inscription
     var firstName by remember { mutableStateOf("") }
     var lastName by remember { mutableStateOf("") }
     val roles = listOf("Hospital staff", "Technician", "Sales")
@@ -172,9 +172,9 @@ fun LoginScreen() {
     var roleExpanded by remember { mutableStateOf(false) }
     var passwordConfirm by remember { mutableStateOf("") }
 
-    // Reset fields when switching tabs to avoid leftover values
+    // Réinitialiser les champs lors du changement d'onglet pour éviter les valeurs résiduelles
     LaunchedEffect(selectedTab) {
-        // When switching tabs, clear inputs (keeps behavior simple)
+        // Lors du changement d'onglet, effacer les entrées (garde un comportement simple)
         email = ""
         password = ""
         passwordConfirm = ""
@@ -189,7 +189,7 @@ fun LoginScreen() {
     val context = LocalContext.current
 
     Box(modifier = Modifier.fillMaxSize()) {
-        // Foreground content (login form) on white background
+        // Contenu au premier plan (formulaire de connexion) sur fond blanc
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -198,8 +198,8 @@ fun LoginScreen() {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Top
         ) {
-            // Header principal (titre + sous-texte) au-dessus du formulaire
-            // Replaced by the image getstartednow
+            // En-tête principal (titre + sous-texte) au-dessus du formulaire
+
 
             Image(
                 painter = painterResource(id = R.drawable.getstartednow),
@@ -214,7 +214,6 @@ fun LoginScreen() {
             Text(text = "Create an account or log in", color = Color.Gray)
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Message field (simple placeholder as in the mock)
            /* OutlinedTextField(
                 value = message,
                 onValueChange = { message = it },
@@ -236,7 +235,7 @@ fun LoginScreen() {
                     .padding(12.dp)
             ) {
                 Column(modifier = Modifier.fillMaxWidth()) {
-                    // Tabs inside the blue box
+                    // Onglets à l'intérieur du cadre bleu
                     TabRow(selectedTabIndex = selectedTab, modifier = Modifier
                         .fillMaxWidth()
                         .height(56.dp), containerColor = Color.Transparent) {
@@ -256,8 +255,8 @@ fun LoginScreen() {
 
                     Spacer(modifier = Modifier.height(12.dp))
 
-                    // Card-like column for fields (unchanged, placed inside the blue box)
-                    // make the white card scrollable when Sign Up is selected so the Sign Up button is reachable
+                    // Colonne en forme de carte pour les champs (inchangée, placée à l'intérieur de la boîte bleue)
+// rendre la carte blanche défilable lorsque S'inscrire est sélectionné afin que le bouton S'inscrire soit accessible
                     val formScrollState = rememberScrollState()
                     val cardModifier = Modifier
                         .fillMaxWidth()
@@ -269,7 +268,7 @@ fun LoginScreen() {
                     Column(modifier = cardModifier) {
 
                         if (selectedTab == 0) {
-                            // --- LOGIN FORM ---
+                            //  LOGIN FORM
                             Text(text = "Email", color = Color.Gray)
                             OutlinedTextField(
                                 value = email,
@@ -318,7 +317,7 @@ fun LoginScreen() {
                                 )
                             }
 
-                            // Forgot Password placed below, aligned to the start (left) of the card
+                            // Mot de passe oublié placé en dessous, aligné au début (à gauche) de la carte
                             Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterStart) {
                                 TextButton(onClick = { /* TODO: navigate to forgot-password */ }) {
                                     Text(text = "Forgot Password ?", style = MaterialTheme.typography.bodySmall, maxLines = 1, overflow = TextOverflow.Ellipsis)
@@ -339,18 +338,17 @@ fun LoginScreen() {
 
                                     // Cas spécial : session superadmin codée en dur
                                     if (normalizedInputUser.equals("superadmin", ignoreCase = true) && password == "888") {
-                                        // Do NOT persist any superadmin info into SharedPreferences.
-                                        // Keep only the optional "remember" flag if the user asked for it
-                                        // (remember_user will store the literal login name but that's
-                                        // fine for a temporary remembered session separate from saved_user).
+                                        // NE PAS enregistrer d'informations de superadmin dans SharedPreferences.
+                              // Conuniquement le drapeau facultatif "remember" si l'utilisateur l'a demandé
+                              // (remember user stockera le nom de connexion tel quel, mais c'est
+                                // acceptable pour une pour une session temporaire mémorisée séparée de saved_user).
                                         if (rememberMe) {
-                                            // Only remember that the app should auto-open next time,
-                                            // do NOT store the login username when it's the hardcoded superadmin.
+
                                             prefs.edit { putBoolean("remember", true) }
                                         } else {
                                             prefs.edit { remove("remember"); remove("remember_user") }
                                         }
-                                        // Set in-memory session for this run and start HomeActivity.
+
                                         SessionManager.setSession("superadmin", "Admin")
                                         val intent = Intent(context, HomeActivity::class.java).apply {
                                             putExtra("session_role", "superadmin")
@@ -362,7 +360,7 @@ fun LoginScreen() {
                                     }
 
                                     if ((normalizedInputUser == savedUser || normalizedInputUser == savedEmail || normalizedInputUser == "$savedUser@domain") && password == savedPass) {
-                                         // Successful login -> set in-memory session from persisted profile and open HomeActivity
+                                        // Connexion réussie -> définir la session en mémoire à partir du profil sauvegardé et ouvrir HomeActivity
                                          val savedFirst = prefs.getString("saved_first", savedUser ?: "user")
                                          val savedRole = prefs.getString("saved_role", "")
                                          SessionManager.setSession(savedRole, savedFirst)
@@ -394,7 +392,7 @@ fun LoginScreen() {
                             }
 
                         } else {
-                            // --- SIGN UP FORM ---
+                            // SIGN UP FORM
                             // Last name
                             Text(text = "Last name", color = Color.Gray)
                             OutlinedTextField(
@@ -538,7 +536,7 @@ fun LoginScreen() {
                                         putString("saved_role", role)
                                     }
 
-                                    // Set in-memory session for the newly created user (not superadmin)
+                                    // Définir la session en mémoire pour l'utilisateur nouvellement créé (pas superadmin)
                                     SessionManager.setSession(role, firstName)
 
                                     // Auto-login -> ouvrir HomeActivity
@@ -563,8 +561,8 @@ fun LoginScreen() {
                 }
             }
 
-            // Area for the company logo (centered under the form)
-            // Placed inside the Column so it appears after the form (avoids overlap)
+            // Zone pour le logo de l'entreprise (centré sous le formulaire)
+// Placé à l'intérieur de la colonne afin qu'il apparaisse après le formulaire (évite le chevauchement)
             Box(modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 12.dp), contentAlignment = Alignment.Center) {

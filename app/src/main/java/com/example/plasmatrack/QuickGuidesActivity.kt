@@ -5,14 +5,14 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 
-// Simple wrapper activity: delegate to AquaQuickActivity2 which contains the Compose UI.
+// Activité wrapper simple : délègue à AquaQuickActivity2 qui contient l'UI Compose.
 class QuickGuidesActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         try {
             startActivity(Intent(this, AquaQuickActivity2::class.java))
         } catch (e: Exception) {
-            Toast.makeText(this, "Failed to open Quick Guides: ${e.message}", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, "Échec de l'ouverture des guides rapides : ${e.message}", Toast.LENGTH_LONG).show()
         }
         finish()
     }

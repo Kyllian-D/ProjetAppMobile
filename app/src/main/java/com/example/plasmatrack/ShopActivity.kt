@@ -64,7 +64,7 @@ import androidx.compose.foundation.layout.size
 import androidx.core.content.edit
 import androidx.core.view.WindowCompat
 
-// data class now stores image path in internal storage as String for persistence
+// la classe de données stocke maintenant le chemin de l'image dans le stockage interne sous forme de chaîne pour la persistance
 data class Product(
     val id: Long = System.currentTimeMillis(),
     val name: String,
@@ -77,7 +77,7 @@ class ShopActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        // Remettre la navigation bar en blanc et demander des icônes sombres (même comportement que ClockActivity)
+
         try {
             window.navigationBarColor = android.graphics.Color.WHITE
             WindowCompat.getInsetsController(window, window.decorView)?.isAppearanceLightNavigationBars = true
@@ -120,18 +120,18 @@ private fun copyUriToInternalFile(context: android.content.Context, uri: Uri): S
     }
 }
 
-// Use SessionManager to check superadmin status (in-memory preferred).
+// Utilisez SessionManager pour vérifier le statut de superadmin (en mémoire de préférence).
 private fun isSuperadminNow(context: android.content.Context): Boolean {
     return SessionManager.isSuperadmin(context)
 }
 
-// --- Sections persistence helper ---
+// Assistant de persistance des sections
 private const val PREF_SECTIONS = "product_sections"
 private fun loadSections(context: android.content.Context): MutableList<String> {
     val sp = context.getSharedPreferences("shop_prefs", android.content.Context.MODE_PRIVATE)
     val joined = sp.getString(PREF_SECTIONS, null)
     return if (joined.isNullOrEmpty()) {
-        mutableListOf("ENDOSCOPE") // default for testing
+        mutableListOf("ENDOSCOPE")
     } else {
         joined.split("||").map { it.trim() }.filter { it.isNotEmpty() }.toMutableList()
     }
@@ -153,7 +153,7 @@ fun ShopScreen() {
     // Sections dynamiques (persistées)
     val sections = remember { mutableStateListOf<String>().apply { addAll(loadSections(context)) } }
 
-    // Favorites state (persisted) via ProductStorage
+    // État des favoris (persisté) via ProductStorage
     val favoritesSet = remember { mutableStateListOf<Long>().apply { addAll(ProductStorage.loadFavorites(context)) } }
     fun toggleFavorite(id: Long) {
         if (favoritesSet.contains(id)) favoritesSet.remove(id) else favoritesSet.add(id)
@@ -163,7 +163,7 @@ fun ShopScreen() {
     // Search state
     var query by remember { mutableStateOf("") }
 
-    // Launcher for product detail activity -> refresh list when result OK
+    // Lancer pour l'activité de détail du produit -> rafraîchir la liste lorsque le résultat est OK
     val detailLauncher = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
             // reload products
@@ -171,7 +171,7 @@ fun ShopScreen() {
         }
     }
 
-    // Use centralized session manager so superadmin session in-memory is respected
+    // Utiliser un gestionnaire de session centralisé afin que la session superadmin en mémoire soit respectée
     val isSuperadmin = SessionManager.isSuperadmin(context)
 
     Box(modifier = Modifier.fillMaxSize().background(Color.White)) {
@@ -179,7 +179,7 @@ fun ShopScreen() {
             .fillMaxSize()
             .statusBarsPadding()
             .padding(start = 12.dp, end = 12.dp, top = 20.dp, bottom = 12.dp)) {
-            // Header row with back button and a small profile image
+            // Ligne d'en-tête avec bouton de retour et petite image de profil
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     IconButton(onClick = { (activity as? ComponentActivity)?.onBackPressedDispatcher?.onBackPressed() }) {
@@ -195,7 +195,7 @@ fun ShopScreen() {
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Search bar + small filter icon
+            // Barre de recherche + petite icône de filtre
             Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                 OutlinedTextField(
                     value = query,
@@ -209,7 +209,7 @@ fun ShopScreen() {
 
                 Spacer(modifier = Modifier.width(8.dp))
 
-                // Add section button visible pour superadmin (texte compact)
+                // Bouton Ajouter une section visible pour superadmin (texte compact)
                 if (isSuperadmin && isSuperadminNow(context)) {
                     Button(onClick = {
                         val input = android.widget.EditText(context)
@@ -237,9 +237,9 @@ fun ShopScreen() {
 
             Spacer(modifier = Modifier.height(10.dp))
 
-            // Main product list grouped by section, filtered by query
+            // Liste principale des produits regroupés par section, filtrée par requête
             LazyColumn(modifier = Modifier.fillMaxWidth()) {
-                // For each section, display header and its products
+                // Pour chaque section, afficher l'en-tête et ses produits
                 sections.forEach { sec ->
                     val sectionProducts = products.filter { it.section.equals(sec, ignoreCase = true) && (query.isBlank() || it.name.contains(query, ignoreCase = true)) }
 
@@ -296,12 +296,12 @@ fun ShopScreen() {
                                     }) { Text(text = "Edit section") }
 
                                     TextButton(onClick = {
-                                        // Delete section with confirmation
+                                        // Supprimer la section avec confirmation
                                         val confirm = android.app.AlertDialog.Builder(context)
                                             .setTitle("Delete section")
                                             .setMessage("Delete section '$sec' and all its products? This cannot be undone.")
                                             .setPositiveButton("Delete") { d, _ ->
-                                                // remove section and its products
+                                                // supprimer la section et ses produits
                                                 sections.remove(sec)
                                                 val removed = products.filter { it.section.equals(sec, ignoreCase = true) }
                                                 if (removed.isNotEmpty()) {
@@ -344,10 +344,10 @@ fun ShopScreen() {
                                 .padding(vertical = 6.dp)
 
                                 .clickable {
-                                    // open correct detail activity depending on role
-                                    // proceed to open detail depending on role
+                                    // ouvrir l'activité de détail correcte selon le rôle
+                                    // procéder à l'ouverture du détail en fonction du rôle
                                     if (isSuperadminNow(context)) {
-                                        // superadmin: open editor via launcher to get result and refresh
+                                        // superadmin ouvrez l'éditeur via le lanceur pour obtenir le résultat et actualiser
                                         val intent = Intent(activity, ProductDetailActivity::class.java).putExtra("product_id", p.id)
                                         try {
                                             detailLauncher.launch(intent)
@@ -356,14 +356,14 @@ fun ShopScreen() {
                                             activity?.startActivity(intent)
                                         }
                                     } else {
-                                        // normal user: prefer the Activity context when available
+                                        // utilisateur normal : préférer le contexte de l'Activité lorsque disponible
                                         val intent = Intent(context, ProductDetailActivityUser::class.java).putExtra("product_id", p.id)
                                         try {
                                             if (activity != null) {
-                                                // opening product (user view) via activity
+                                                // ouverture du produit (vue utilisateur) via activité
                                                 activity.startActivity(intent)
                                             } else {
-                                                // fallback: use application context with NEW_TASK
+                                                // solution de repli : utiliser le contexte de l'application avec NEW_TASK
                                                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                                                 context.startActivity(intent)
                                             }
@@ -381,7 +381,7 @@ fun ShopScreen() {
                                 shape = RoundedCornerShape(8.dp)
                             ) {
                                 Column(modifier = Modifier.padding(12.dp)) {
-                                    // Top row: name + spacer + section + heart icon
+                                    // Ligne du haut : nom + espaceur + section + icône de cœur
                                     Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                                         Text(text = p.name, style = MaterialTheme.typography.titleMedium)
                                         Spacer(modifier = Modifier.weight(1f))
@@ -402,7 +402,7 @@ fun ShopScreen() {
 
                                     if (isSuperadmin && isSuperadminNow(context)) {
                                         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-                                            // Edit button removed per request; keep Delete only
+                                            // Bouton Modifier supprimé sur demande ; garder uniquement Supprimer
                                             TextButton(onClick = {
                                                 if (!isSuperadminNow(context)) {
                                                     Toast.makeText(context, "Accès refusé", Toast.LENGTH_SHORT).show()
@@ -427,7 +427,7 @@ fun ShopScreen() {
         // FloatingActionButton and dialog logic: remonter le FAB (au-dessus de la barre) et légèrement agrandir
         if (isSuperadmin && isSuperadminNow(context)) {
             FloatingActionButton(onClick = {
-                // Open ProductDetailActivity in create mode (product_id = -1) for result
+                // Ouvrir ProductDetailActivity en mode création (product_id = -1) pour le résultat
                 val intent = Intent(activity, ProductDetailActivity::class.java).putExtra("product_id", -1L).putExtra("is_superadmin", true)
                 detailLauncher.launch(intent)
             }, modifier = Modifier
@@ -460,7 +460,7 @@ fun ShopScreen() {
             }
         }
 
-        // Bottom icon bar — use same implementation as ClockActivity for consistent look
+
         Surface(
             modifier = Modifier
                 .fillMaxWidth()
@@ -536,7 +536,7 @@ fun ProductDialog(initialProduct: Product?, sections: List<String>, onCancel: ()
                 OutlinedTextField(value = description, onValueChange = { description = it }, label = { Text("Description") }, modifier = Modifier.fillMaxWidth(), maxLines = 4)
                 Spacer(modifier = Modifier.height(8.dp))
 
-                // Section simple dropdown using buttons
+                // Section de menu déroulant simple utilisant des boutons
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                     Text(text = "Section: $section", modifier = Modifier.align(Alignment.CenterVertically))
                     Button(onClick = { expanded = !expanded }) { Text(text = "Choose") }
@@ -552,7 +552,7 @@ fun ProductDialog(initialProduct: Product?, sections: List<String>, onCancel: ()
                 Spacer(modifier = Modifier.height(8.dp))
                 Button(onClick = { imagePicker.launch(arrayOf("image/*")) }, modifier = Modifier.fillMaxWidth()) { Text(text = "Choose photo") }
 
-                // preview of existing or selected image
+                // aperçu de l'image existante ou sélectionnée
                 val previewPath = imageUri?.toString() ?: existingImagePath
                 previewPath?.let { pth ->
                     val uriToShow = if (imageUri != null) imageUri else existingImagePath?.let { Uri.fromFile(File(it)) }
@@ -582,7 +582,7 @@ fun ProductDialog(initialProduct: Product?, sections: List<String>, onCancel: ()
                     return@TextButton
                 }
 
-                // If a new image was picked, copy it into internal storage and remove the old image
+                // Si une nouvelle image a été choisie, copiez-la dans le stockage interne et supprimez l'ancienne image
                 var finalImagePath: String? = existingImagePath
                 if (imageUri != null) {
                     val copied = copyUriToInternalFile(context, imageUri!!)
