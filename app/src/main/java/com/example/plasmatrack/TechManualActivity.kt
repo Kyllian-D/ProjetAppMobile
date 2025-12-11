@@ -39,10 +39,7 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 
-/**
- * Assurez-vous que le manuel technique par défaut est présent. Copiez res/raw/aquatyphoon_technical_manual_user.pdf dans filesDir
- * et créez une section 'instructions' avec un élément intitulé "Manuel technique pour l'utilisateur AquaTYPHOON".
- */
+
 private fun ensureDefaultTechManuals(ctx: Context) {
     try {
         val prefs = ctx.getSharedPreferences("tech_manuals_prefs", Context.MODE_PRIVATE)
