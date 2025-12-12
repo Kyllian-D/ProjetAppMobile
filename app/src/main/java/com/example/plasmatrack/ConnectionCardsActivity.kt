@@ -33,6 +33,9 @@ import androidx.compose.ui.text.withStyle
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import androidx.core.content.FileProvider
+import android.util.Log
+import android.content.Context
 
 private const val CONN_FILE = "connection_cards.csv"
 
@@ -54,14 +57,17 @@ class ConnectionCardsActivity : ComponentActivity() {
         try {
             WindowCompat.setDecorFitsSystemWindows(window, false)
             val controller = WindowCompat.getInsetsController(window, window.decorView)
-            controller?.let {
-                it.hide(WindowInsetsCompat.Type.systemBars())
-                it.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-            }
+            // controller est non-null
+            controller.hide(WindowInsetsCompat.Type.systemBars())
+            controller.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
         } catch (_: Exception) {
             // ignorer sur les anciens appareils
         }
         enableEdgeToEdge()
+
+        // Nettoyage initial des fichiers temporaires plus vieux que 24h pour éviter d'accumuler
+        try { PdfHelper.cleanupOldTempPdfFiles(this, 24 * 60 * 60 * 1000L) } catch (_: Exception) {}
+
         setContent {
             PlasmaTrackTheme {
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
@@ -73,7 +79,7 @@ class ConnectionCardsActivity : ComponentActivity() {
 }
 
 // Fonction pour copier un fichier URI vers un fichier interne
-private fun copyUriToInternalFile(context: android.content.Context, uri: Uri, destName: String = CONN_FILE): Boolean {
+private fun copyUriToInternalFile(context: Context, uri: Uri, destName: String = CONN_FILE): Boolean {
     return try {
         val resolver = context.contentResolver
         resolver.openInputStream(uri).use { input ->
@@ -83,14 +89,13 @@ private fun copyUriToInternalFile(context: android.content.Context, uri: Uri, de
             }
         }
         true
-    } catch (e: Exception) {
-        e.printStackTrace()
+    } catch (_: Exception) {
         false
     }
 }
 
 // Fonction pour charger les cartes de connexion à partir d'un fichier
-fun loadConnectionCardsFromFile(context: android.content.Context, fileName: String = CONN_FILE): List<ConnectionCardItem> {
+fun loadConnectionCardsFromFile(context: Context, fileName: String = CONN_FILE): List<ConnectionCardItem> {
     val list = mutableListOf<ConnectionCardItem>()
     try {
         val f = File(context.filesDir, fileName)
@@ -173,8 +178,8 @@ fun loadConnectionCardsFromFile(context: android.content.Context, fileName: Stri
                 )
             }
         }
-    } catch (e: Exception) {
-        e.printStackTrace()
+    } catch (_: Exception) {
+        // ignore
     }
     return list
 }
@@ -280,10 +285,10 @@ fun ConnectionCardsScreen() {
 
         LazyColumn(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             items(filtered) { item ->
-                // build a unique id for the connection item
+                // construire un identifiant unique pour l'élément de connexion
                 val rawUid = (item.brand + "|" + item.connectionSet).trim()
                 val prefUid = "AQUA|$rawUid"
-                // consider old entries (no prefix) as AQUA for backward compatibility
+                // considérer les anciennes entrées (sans préfixe) comme AQUA pour la compatibilité ascendante
                 val isFav = connFavoritesState.value.contains(prefUid) || connFavoritesState.value.contains(rawUid)
 
                 Card(modifier = Modifier
@@ -298,13 +303,18 @@ fun ConnectionCardsScreen() {
                                 Text(text = item.brand, style = MaterialTheme.typography.titleMedium)
                                 Spacer(modifier = Modifier.height(4.dp))
                                 Text(text = "Endoscope model: ${item.connectionSet}")
-                                Text(text = "Card: ${item.connectionCard}")
+                                // Remplacement : afficher la ligne Card comme TextButton (visible sans ouvrir le dialog) — utilise PdfHelper
+                                TextButton(onClick = {
+                                    val match = PdfHelper.findPdfNameMatchingCode(context, item.connectionCard)
+                                    if (match != null) PdfHelper.openPdfForMatch(context, match) else Toast.makeText(context, "PDF introuvable pour ${item.connectionCard}", Toast.LENGTH_SHORT).show()
+                                }) {
+                                    Text(text = "Card: ${item.connectionCard}", color = MaterialTheme.colorScheme.primary)
+                                }
                             }
-                            // heart icon (22.dp) aligned to the right
+
                             IconButton(onClick = {
                                 val current = connFavoritesState.value.toMutableSet()
                                 if (current.contains(prefUid) || current.contains(rawUid)) {
-                                    // remove both forms if present
                                     current.remove(prefUid)
                                     current.remove(rawUid)
                                 } else {
@@ -387,6 +397,7 @@ fun ConnectionCardsScreen() {
                     )
                     Spacer(modifier = Modifier.height(8.dp))
 
+                    // Remplacement : afficher la connection card en texte statique (non cliquable), comme dans Plasma
                     Text(
                         text = buildAnnotatedString {
                             append("AquaTYPHOON Connection card : ")
