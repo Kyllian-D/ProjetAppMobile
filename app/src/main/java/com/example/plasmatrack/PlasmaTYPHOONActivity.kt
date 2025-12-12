@@ -66,6 +66,7 @@ class PlasmaTYPHOONActivity : ComponentActivity() {
 @Composable
 fun PlasmaTYPHOONScreen() {
     val context = LocalContext.current
+    val activity = context as? Activity
     val TAG = "PlasmaTYPHOON"
 
     fun openUserPlasma() {
@@ -200,7 +201,10 @@ fun PlasmaTYPHOONScreen() {
                     Icon(painter = painterResource(id = R.drawable.iconhomeb), contentDescription = "home", modifier = Modifier.size(24.dp), tint = Color.Unspecified)
                 }
 
-                IconButton(onClick = { /* open clock */ }, modifier = Modifier.size(48.dp)) {
+                IconButton(onClick = {
+                    val intent = Intent(activity, ClockActivity::class.java)
+                    try { activity?.startActivity(intent) } catch (_: Exception) { intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK); context.startActivity(intent) }
+                }, modifier = Modifier.size(48.dp)) {
                     Icon(painter = painterResource(id = R.drawable.iconclockb), contentDescription = "clock", modifier = Modifier.size(24.dp), tint = Color.Unspecified)
                 }
 
