@@ -78,7 +78,7 @@ class ConnectionCardsActivity : ComponentActivity() {
     }
 }
 
-// Fonction pour copier un fichier URI vers un fichier interne
+// Fonction pour copier un fichier URI vers un fichier internee
 private fun copyUriToInternalFile(context: Context, uri: Uri, destName: String = CONN_FILE): Boolean {
     return try {
         val resolver = context.contentResolver
